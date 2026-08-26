@@ -21,7 +21,7 @@
             background: #0a0e17;
             font-family: -apple-system, 'Helvetica Neue', 'PingFang HK', 'Segoe UI', sans-serif;
             color: #eef3f9;
-            padding: 8px 10px;
+            padding: 10px 14px;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -38,102 +38,101 @@
         /* ===== 卡片 ===== */
         .card {
             background: linear-gradient(145deg, #141c2a, #0e1520);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 8px 10px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             height: 100%;
             display: flex;
             flex-direction: column;
         }
 
         .card-title {
-            font-size: 13px;
+            font-size: 18px;
             font-weight: 700;
-            letter-spacing: 0.2px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
             flex-shrink: 0;
             color: #b0c8e0;
         }
 
         .card-title .badge {
-            font-size: 9px;
+            font-size: 13px;
             font-weight: 400;
             color: #4f6a8a;
             margin-left: auto;
             background: rgba(255, 255, 255, 0.04);
-            padding: 0 10px;
+            padding: 2px 14px;
             border-radius: 30px;
         }
 
-        /* ===== 頂部（壓縮） ===== */
+        /* ===== 頂部 ===== */
         .top-bar {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 6px;
-            margin-bottom: 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            gap: 6px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 8px;
             flex-shrink: 0;
         }
 
         .top-bar h1 {
-            font-size: 17px;
+            font-size: 22px;
             font-weight: 700;
             color: #5b9cff;
         }
 
         .top-bar .time {
-            font-size: 12px;
+            font-size: 15px;
             color: #5b7a9c;
         }
 
         .top-stats {
             display: flex;
-            gap: 6px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .top-stats .stat {
             background: rgba(255, 255, 255, 0.04);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 10px;
+            padding: 4px 16px;
+            border-radius: 24px;
+            font-size: 13px;
             text-align: center;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .top-stats .stat .label {
             color: #5b7a9c;
-            font-size: 8px;
+            font-size: 10px;
             display: block;
         }
 
         .top-stats .stat .value {
             font-weight: 700;
-            font-size: 13px;
+            font-size: 17px;
         }
 
         .stat-amber .value { color: #f5b342; }
         .stat-emerald .value { color: #4fcf8a; }
         .stat-sky .value { color: #5bb8ff; }
 
-        /* ===== 主網格（填滿剩餘高度） ===== */
+        /* ===== 主網格：3 欄 ===== */
         .main-grid {
             flex: 1;
             display: grid;
             grid-template-columns: 5fr 4fr 3fr;
-            gap: 6px;
+            gap: 10px;
             min-height: 0;
         }
 
-        /* ===== 課表（字體適中） ===== */
+        /* ===== 課表 ===== */
         .schedule-scroll {
             overflow-y: auto;
             flex: 1;
@@ -141,7 +140,7 @@
         }
 
         .schedule-scroll::-webkit-scrollbar {
-            width: 3px;
+            width: 4px;
         }
         .schedule-scroll::-webkit-scrollbar-thumb {
             background: #2a3f5a;
@@ -150,35 +149,35 @@
 
         .sch-table {
             width: 100%;
-            font-size: 13px;
+            font-size: 18px;
             border-collapse: collapse;
         }
 
         .sch-table thead th {
             text-align: left;
-            padding: 3px 4px;
-            font-size: 9px;
+            padding: 6px 8px;
+            font-size: 13px;
             text-transform: uppercase;
             color: #4f6a8a;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
             font-weight: 600;
         }
 
         .sch-table tbody td {
-            padding: 3px 4px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             color: #dce8f5;
-            font-size: 13px;
-            line-height: 1.3;
+            font-size: 18px;
+            line-height: 1.4;
         }
 
         .sch-table tbody tr.now td {
-            background: rgba(45, 140, 255, 0.08);
-            border-left: 3px solid #3b8cff;
+            background: rgba(45, 140, 255, 0.10);
+            border-left: 4px solid #3b8cff;
         }
 
         .sch-table tbody tr.now td:first-child {
-            padding-left: 1px;
+            padding-left: 4px;
         }
 
         .sch-table tbody tr.break td {
@@ -191,24 +190,24 @@
         .sch-table .period {
             font-weight: 600;
             color: #5b7a9c;
-            font-size: 11px;
-            width: 28px;
+            font-size: 15px;
+            width: 38px;
         }
         .sch-table .time-col {
             font-family: monospace;
-            font-size: 10px;
+            font-size: 14px;
             color: #4f8fc0;
-            width: 75px;
+            width: 110px;
         }
 
         /* ===== 穿梭巴士 ===== */
         .shuttle-wrapper {
             flex: 1;
             min-height: 0;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             background: #0d1420;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             position: relative;
         }
 
@@ -236,7 +235,7 @@
         }
 
         .item-list::-webkit-scrollbar {
-            width: 2px;
+            width: 3px;
         }
         .item-list::-webkit-scrollbar-thumb {
             background: #2a3f5a;
@@ -244,16 +243,16 @@
         }
 
         .list-item {
-            padding: 4px 8px;
-            border-radius: 5px;
-            margin-bottom: 2px;
-            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 3px;
+            font-size: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: rgba(255, 255, 255, 0.02);
-            border-left: 3px solid #4f6a8a;
-            line-height: 1.3;
+            border-left: 4px solid #4f6a8a;
+            line-height: 1.4;
         }
 
         .list-item.hw { border-left-color: #f472b6; }
@@ -262,26 +261,25 @@
 
         .empty-state {
             color: #4f6a8a;
-            font-size: 12px;
-            padding: 4px 0;
+            font-size: 15px;
+            padding: 6px 0;
             text-align: center;
         }
 
         .section-label {
-            font-size: 11px;
+            font-size: 14px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             flex-shrink: 0;
-            padding: 2px 0;
+            padding: 3px 0;
         }
 
         .section-label:first-of-type {
             padding-top: 0;
         }
 
-        /* 事務區塊 - 用 flex 均分 */
         .tasks-area {
             flex: 1;
             display: flex;
@@ -297,29 +295,29 @@
         }
 
         .tasks-area .task-block:not(:last-child) {
-            margin-bottom: 2px;
+            margin-bottom: 3px;
         }
 
         /* ===== 底部 ===== */
         .footer-bar {
             flex-shrink: 0;
-            margin-top: 4px;
-            padding-top: 4px;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1px solid rgba(255, 255, 255, 0.03);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 10px;
+            font-size: 13px;
             color: #3f5a7a;
         }
 
         .footer-bar .dot {
             display: inline-block;
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #3bc96a;
-            margin-right: 4px;
+            margin-right: 6px;
             animation: pulse-dot 2s infinite;
         }
 
@@ -332,9 +330,9 @@
             background: rgba(255, 255, 255, 0.05);
             border: none;
             color: #5b7a9c;
-            padding: 1px 14px;
+            padding: 3px 18px;
             border-radius: 30px;
-            font-size: 10px;
+            font-size: 13px;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -342,31 +340,32 @@
             background: rgba(255, 255, 255, 0.10);
         }
 
-        /* ===== 響應式：細 Mon 再縮 ===== */
-        @media (max-width: 820px) {
-            body { padding: 5px 6px; }
-            .card { padding: 5px 6px; border-radius: 8px; }
-            .top-bar h1 { font-size: 14px; }
-            .top-bar .time { font-size: 10px; }
-            .top-stats .stat .value { font-size: 11px; }
-            .main-grid { gap: 4px; }
-            .sch-table { font-size: 11px; }
-            .sch-table tbody td { font-size: 11px; padding: 2px 3px; }
-            .sch-table .period { font-size: 9px; width: 22px; }
-            .sch-table .time-col { font-size: 9px; width: 60px; }
-            .list-item { font-size: 10px; padding: 2px 6px; }
-            .empty-state { font-size: 10px; }
-            .section-label { font-size: 10px; }
-            .card-title { font-size: 11px; }
-            .footer-bar { font-size: 9px; }
+        /* ===== iPad 直向微調 ===== */
+        @media (max-width: 1024px) {
+            body { padding: 6px 8px; }
+            .card { padding: 8px 10px; }
+            .top-bar h1 { font-size: 18px; }
+            .top-bar .time { font-size: 12px; }
+            .top-stats .stat .value { font-size: 14px; }
+            .main-grid { gap: 6px; }
+            .sch-table { font-size: 15px; }
+            .sch-table tbody td { font-size: 15px; padding: 4px 6px; }
+            .sch-table .period { font-size: 12px; width: 30px; }
+            .sch-table .time-col { font-size: 11px; width: 80px; }
+            .card-title { font-size: 15px; }
+            .list-item { font-size: 13px; padding: 4px 8px; }
+            .empty-state { font-size: 13px; }
+            .section-label { font-size: 12px; }
+            .footer-bar { font-size: 11px; }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .main-grid {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto auto auto;
             }
-            .card { min-height: 120px; }
+            .card { min-height: 140px; }
+            .sch-table tbody td { font-size: 14px; }
         }
     </style>
 </head>
@@ -415,7 +414,7 @@
                         </tr>
                     </thead>
                     <tbody id="schedule-body">
-                        <tr><td colspan="3" class="text-center text-slate-500 py-2">⏳ 載入中...</td></tr>
+                        <tr><td colspan="3" class="text-center text-slate-500 py-3">⏳ 載入中...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -428,25 +427,22 @@
                 <span class="badge">總覽</span>
             </div>
             <div class="tasks-area">
-                <!-- 功課 -->
                 <div class="task-block">
                     <div class="section-label" style="color: #f472b6;">📚 功課</div>
                     <div class="item-list" id="homework-container">
                         <div class="empty-state">今日無功課紀錄</div>
                     </div>
                 </div>
-                <!-- Deadline -->
                 <div class="task-block">
                     <div class="section-label" style="color: #fbbf24;">⏳ 文件 Deadline</div>
                     <div class="item-list" id="deadline-container">
                         <div class="empty-state">今日無截止需求</div>
                     </div>
                 </div>
-                <!-- 會議 -->
                 <div class="task-block" style="flex: 0 0 auto;">
                     <div class="section-label" style="color: #a78bfa;">📌 今日會議</div>
                     <div id="meetings-container">
-                        <div class="empty-state" style="padding: 2px 0;">今日無會議</div>
+                        <div class="empty-state" style="padding: 3px 0;">今日無會議</div>
                     </div>
                 </div>
             </div>
@@ -540,7 +536,7 @@
                     tbody.appendChild(tr);
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-2">今日無課堂</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
             }
 
             // ---- 功課 ----
@@ -567,7 +563,7 @@
                     const div = document.createElement("div");
                     div.className = "list-item dl";
                     div.innerHTML = `
-                        <span>${d.item} <span style="color:#4f6a8a;font-size:10px;">(${d.dept})</span></span>
+                        <span>${d.item} <span style="color:#4f6a8a;font-size:12px;">(${d.dept})</span></span>
                         <span style="color:#fbbf24;font-weight:700;">${d.status}</span>
                     `;
                     dlBox.appendChild(div);
@@ -584,13 +580,13 @@
                     const div = document.createElement("div");
                     div.className = "list-item mtg";
                     div.innerHTML = `
-                        <span>${m.title} <span style="color:#4f6a8a;font-size:10px;">${m.remark || ''}</span></span>
-                        <span style="color:#a78bfa;font-family:monospace;font-size:11px;">${m.start}-${m.end}</span>
+                        <span>${m.title} <span style="color:#4f6a8a;font-size:12px;">${m.remark || ''}</span></span>
+                        <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start}-${m.end}</span>
                     `;
                     mBox.appendChild(div);
                 });
             } else {
-                mBox.innerHTML = `<div class="empty-state" style="padding:2px 0;">今日無會議</div>`;
+                mBox.innerHTML = `<div class="empty-state" style="padding:3px 0;">今日無會議</div>`;
             }
 
         } catch (err) {
