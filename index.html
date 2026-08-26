@@ -1,283 +1,646 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>教師個人智慧儀表板 Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-    .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🏫 教師智慧儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ===== 全域設定 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e17;
+            font-family: -apple-system, 'Helvetica Neue', 'PingFang HK', 'Segoe UI', sans-serif;
+            color: #eef3f9;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        /* ===== 自定義卡片 ===== */
+        .card-custom {
+            background: linear-gradient(145deg, #141c2a, #0e1520);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 18px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            transition: 0.2s;
+        }
+
+        .card-custom:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ===== 標題樣式 ===== */
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* ===== 課表表格 ===== */
+        .schedule-table {
+            width: 100%;
+            font-size: 14px;
+            border-collapse: collapse;
+        }
+
+        .schedule-table thead th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #5b7a9c;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .schedule-table tbody td {
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: #c8d6e8;
+        }
+
+        .schedule-table tbody tr.now {
+            background: rgba(45, 140, 255, 0.10);
+            border-left: 3px solid #3b8cff;
+        }
+
+        .schedule-table tbody tr.now td:first-child {
+            border-left: 3px solid #3b8cff;
+            padding-left: 9px;
+        }
+
+        .schedule-table tbody tr.break td {
+            color: #a08a5a;
+        }
+
+        .schedule-table tbody tr.lunch td {
+            color: #5fc98a;
+        }
+
+        /* ===== 九巴到站 ===== */
+        .bus-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 4px solid #f5b342;
+            margin-bottom: 6px;
+            transition: 0.15s;
+        }
+
+        .bus-item .route {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            min-width: 54px;
+        }
+
+        .bus-item .dest {
+            flex: 1;
+            font-size: 14px;
+            color: #9bb0c9;
+            margin: 0 10px;
+        }
+
+        .bus-item .eta {
+            font-weight: 700;
+            font-size: 17px;
+            padding: 2px 16px;
+            border-radius: 30px;
+            min-width: 64px;
+            text-align: center;
+            background: rgba(60, 150, 255, 0.10);
+            color: #6fc3ff;
+        }
+
+        .bus-item .eta.urgent {
+            background: rgba(255, 80, 50, 0.15);
+            color: #ff7b5a;
+        }
+
+        .bus-item .eta.arrived {
+            background: rgba(60, 220, 120, 0.12);
+            color: #5fdf8a;
+        }
+
+        /* ===== 底部狀態列 ===== */
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3bc96a;
+            margin-right: 8px;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        /* ===== 功課/Deadline 項目 ===== */
+        .hw-item {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #f472b6;
+            margin-bottom: 4px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .deadline-item {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #fbbf24;
+            margin-bottom: 4px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ===== 響應式微調 ===== */
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            .card-custom { padding: 12px 14px; }
+            .schedule-table { font-size: 12px; }
+            .bus-item .route { font-size: 18px; min-width: 40px; }
+            .bus-item .eta { font-size: 14px; min-width: 50px; padding: 2px 10px; }
+        }
+    </style>
 </head>
-<body class="p-4 md:p-6 min-h-screen">
+<body>
 
-  <!-- 頂部標題與時間列 -->
-  <div class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-slate-700 gap-4">
-    <div>
-      <h1 class="text-2xl font-bold text-blue-400 flex items-center gap-2">
-        <span>🏫</span> 教師每日主控儀表板
-      </h1>
-      <p id="system-time" class="text-slate-400 text-sm mt-1">載入時間中...</p>
-    </div>
-    
-    <div class="flex gap-3 text-center">
-      <div class="card px-4 py-2">
-        <div class="text-xs text-slate-400">當天 Cycle</div>
-        <div id="cycle-day" class="text-xl font-bold text-amber-400">--</div>
-      </div>
-      <div class="card px-4 py-2">
-        <div class="text-xs text-slate-400">課節模式</div>
-        <div id="school-mode" class="text-xl font-bold text-emerald-400">--</div>
-      </div>
-      <div class="card px-4 py-2">
-        <div class="text-xs text-slate-400">學校活動/備註</div>
-        <div id="school-note" class="text-sm font-semibold text-sky-300 mt-1">無特別活動</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 主要內容網格 -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-    <!-- 左側：課表、功課、Deadline、會議 (占 7 欄) -->
-    <div class="lg:col-span-7 space-y-6">
-      
-      <!-- 固定課表 -->
-      <div class="card p-5">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
-            <span>📅</span> 今日固定課課表
-          </h2>
-          <span class="text-xs bg-slate-700 px-2.5 py-1 rounded-full text-slate-300" id="current-date-display">2026/--/--</span>
+    <!-- ========================================================== -->
+    <!-- 頂部：標題 + 時間 + 快速狀態 -->
+    <!-- ========================================================== -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-slate-700/50 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-blue-400 flex items-center gap-2">
+                🏫 教師智慧儀表板
+            </h1>
+            <p class="text-slate-400 text-sm mt-1" id="system-time">載入中...</p>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-300">
-            <thead class="bg-slate-800 text-slate-400 uppercase text-xs">
-              <tr>
-                <th class="p-2.5 rounded-l">節次</th>
-                <th class="p-2.5">時間</th>
-                <th class="p-2.5 rounded-r">課堂資訊 (科目 / 班別 / 課室)</th>
-              </tr>
-            </thead>
-            <tbody id="schedule-body" class="divide-y divide-slate-700/50">
-              <tr><td colspan="3" class="p-4 text-center text-slate-500">⏳ 正在同步 Google Sheets 課表...</td></tr>
-            </tbody>
-          </table>
+        <div class="flex flex-wrap gap-3 text-center">
+            <div class="card-custom py-2 px-4">
+                <div class="text-xs text-slate-400">Cycle</div>
+                <div id="cycle-day" class="text-xl font-bold text-amber-400">--</div>
+            </div>
+            <div class="card-custom py-2 px-4">
+                <div class="text-xs text-slate-400">模式</div>
+                <div id="school-mode" class="text-xl font-bold text-emerald-400">--</div>
+            </div>
+            <div class="card-custom py-2 px-4">
+                <div class="text-xs text-slate-400">活動</div>
+                <div id="school-note" class="text-sm font-semibold text-sky-300 mt-1">--</div>
+            </div>
         </div>
-      </div>
-
-      <!-- 今日功課與文件 Deadline -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- 功課派發/收集 -->
-        <div class="card p-4">
-          <h3 class="text-md font-bold text-rose-400 mb-2 flex items-center gap-1.5">
-            <span>📚</span> 功課派發 / 收集紀錄
-          </h3>
-          <div id="homework-container" class="space-y-2 text-xs">
-            <div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無功課紀錄</div>
-          </div>
-        </div>
-
-        <!-- 文件 Deadline -->
-        <div class="card p-4">
-          <h3 class="text-md font-bold text-amber-400 mb-2 flex items-center gap-1.5">
-            <span>⏳</span> 文件 / 教務 Deadline
-          </h3>
-          <div id="deadline-container" class="space-y-2 text-xs">
-            <div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無文件截止需求</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 突發會議卡片 -->
-      <div class="card p-4">
-        <h2 class="text-md font-bold text-purple-400 mb-2 flex items-center gap-2">
-          <span>📌</span> 當日突發會議紀錄
-        </h2>
-        <div id="meetings-container" class="space-y-2 text-xs">
-          <div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無突發會議</div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- 右側：交通 ETA & 天氣資訊 (占 5 欄) -->
-    <div class="lg:col-span-5 space-y-6">
+    <!-- ========================================================== -->
+    <!-- 主網格：12 欄 -->
+    <!-- ========================================================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
-      <!-- 1. 形點 II 九巴實時到站 -->
-      <div class="card p-5">
-        <h2 class="text-lg font-bold text-emerald-400 mb-3 flex items-center gap-2">
-          <span>🚌</span> 形點 II 九巴實時到站
-        </h2>
-        <div class="space-y-2.5" id="kmb-bus-container">
-          <div class="p-3 bg-slate-800 rounded-lg border border-slate-700 text-xs text-slate-400">
-            ⏳ 正在載入形點 II 巴士到站時間...
-          </div>
-        </div>
-      </div>
+        <!-- ====== 左側：課表 + 功課 + Deadline + 會議 (7 欄) ====== -->
+        <div class="lg:col-span-7 space-y-5">
 
-      <!-- 2. 屋苑 Shuttle 實時面板 (SOCIF 內嵌窗口) -->
-      <div class="card p-5">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-bold text-amber-300 flex items-center gap-2">
-            <span>🚍</span> 屋苑 Shuttle (SunBus) 地圖
-          </h2>
-          <a href="https://eta-app.socif.co/sunbus?site=gds&lang=zh" target="_blank" class="text-xs text-sky-400 hover:underline">全螢幕 ↗</a>
-        </div>
-        <div class="rounded-lg overflow-hidden border border-slate-700 h-64 bg-slate-900">
-          <iframe src="https://eta-app.socif.co/sunbus?site=gds&lang=zh" class="w-full h-full border-0"></iframe>
-        </div>
-      </div>
-
-      <!-- 3. 天文台即時氣象雷達圖 -->
-      <div class="card p-5">
-        <h2 class="text-lg font-bold text-sky-400 mb-3 flex items-center gap-2">
-          <span>🌧️</span> 天文台即時雷達圖像
-        </h2>
-        <div class="rounded-lg overflow-hidden border border-slate-700 bg-black flex justify-center p-2">
-          <img id="radar-img" src="https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad_064_fix.gif" alt="天文台雷達圖" class="w-full h-auto max-h-56 object-contain" onerror="this.src='https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad064_fix.gif'">
-        </div>
-        <p class="text-xs text-slate-500 mt-2 text-right">每 5 分鐘自動重載</p>
-      </div>
-
-    </div>
-  </div>
-
-  <script>
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw_bgy080wFKf3iybNhFDc0LBHmb0-84-fifMqF2P_50PUncokrrnk9mgr5w3jNawBR/exec";
-
-    function updateClock() {
-      const now = new Date();
-      document.getElementById("system-time").innerText = now.toLocaleString("zh-HK", {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-      });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // 抓取 Google Sheets 資料
-    async function fetchDashboardData() {
-      try {
-        const response = await fetch(GOOGLE_API_URL, { redirect: "follow" });
-        const data = await response.json();
-
-        document.getElementById("current-date-display").innerText = data.date + " (" + data.weekday + ")";
-        document.getElementById("cycle-day").innerText = data.cycleDay || "假期";
-        document.getElementById("school-mode").innerText = data.mode || "全日";
-        document.getElementById("school-note").innerText = data.note || "無特別活動";
-
-        // 課表
-        const tbody = document.getElementById("schedule-body");
-        tbody.innerHTML = "";
-        if (data.schedule && data.schedule.length > 0) {
-          data.schedule.forEach(item => {
-            const tr = document.createElement("tr");
-            tr.className = "hover:bg-slate-800/50 transition-colors";
-            if (item.info.includes("小息") || item.info.includes("午膳") || item.info.includes("Roll Call")) {
-              tr.className += " text-slate-500 italic bg-slate-800/30";
-            }
-            tr.innerHTML = `
-              <td class="p-2.5 font-bold text-slate-400">${item.period}</td>
-              <td class="p-2.5 font-mono text-xs text-sky-300">${item.time}</td>
-              <td class="p-2.5 font-medium text-slate-100">${item.info}</td>
-            `;
-            tbody.appendChild(tr);
-          });
-        }
-
-        // 功課
-        const hwBox = document.getElementById("homework-container");
-        hwBox.innerHTML = "";
-        if (data.homework && data.homework.length > 0) {
-          data.homework.forEach(h => {
-            const div = document.createElement("div");
-            div.className = "p-2 bg-slate-800 rounded border border-slate-700 flex justify-between";
-            div.innerHTML = `<span class="font-bold text-slate-200">[${h.type}] ${h.className} - ${h.title}</span>`;
-            hwBox.appendChild(div);
-          });
-        } else {
-          hwBox.innerHTML = `<div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無功課紀錄</div>`;
-        }
-
-        // Deadline
-        const dlBox = document.getElementById("deadline-container");
-        dlBox.innerHTML = "";
-        if (data.deadlines && data.deadlines.length > 0) {
-          data.deadlines.forEach(d => {
-            const div = document.createElement("div");
-            div.className = "p-2 bg-slate-800 rounded border border-slate-700 flex justify-between";
-            div.innerHTML = `<span>${d.item} (${d.dept})</span><span class="text-amber-400 font-bold">${d.status}</span>`;
-            dlBox.appendChild(div);
-          });
-        } else {
-          dlBox.innerHTML = `<div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無文件截止需求</div>`;
-        }
-
-        // 會議
-        const mBox = document.getElementById("meetings-container");
-        mBox.innerHTML = "";
-        if (data.meetings && data.meetings.length > 0) {
-          data.meetings.forEach(m => {
-            const div = document.createElement("div");
-            div.className = "p-2 bg-purple-950/40 border border-purple-800/50 rounded flex justify-between";
-            div.innerHTML = `<span>${m.title} (${m.remark || ""})</span><span class="font-mono text-purple-300">${m.start}-${m.end}</span>`;
-            mBox.appendChild(div);
-          });
-        } else {
-          mBox.innerHTML = `<div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無突發會議</div>`;
-        }
-
-      } catch (err) {
-        console.error("同步失敗:", err);
-      }
-    }
-
-    // 抓取形點 II 九巴實時 ETA (通用站號：形點 II 往市區)
-    async function fetchKmbETA() {
-      const container = document.getElementById("kmb-bus-container");
-      try {
-        const res = await fetch("https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/BS10-T-1200-0");
-        const json = await res.json();
-        
-        if (json.data && json.data.length > 0) {
-          container.innerHTML = "";
-          // 篩選 268X, 68M, 968
-          const targetRoutes = ["268X", "68M", "968"];
-          let routesShown = {};
-
-          json.data.forEach(item => {
-            if (targetRoutes.includes(item.route) && item.eta && !routesShown[item.route]) {
-              routesShown[item.route] = true;
-              const diffMins = Math.max(0, Math.round((new Date(item.eta) - new Date()) / 60000));
-              const div = document.createElement("div");
-              div.className = "p-3 bg-slate-800 rounded-lg flex justify-between items-center border border-slate-700";
-              div.innerHTML = `
-                <div>
-                  <div class="font-bold text-white">九巴 ${item.route} <span class="text-xs text-slate-400">往 ${item.dest_tc}</span></div>
-                  <div class="text-xs text-slate-400">形點 II 巴士站</div>
+            <!-- 課表 -->
+            <div class="card-custom">
+                <div class="section-title text-slate-200">
+                    📅 今日課表
+                    <span class="text-xs font-normal text-slate-500 ml-auto" id="current-date-display">--</span>
                 </div>
-                <span class="text-lg font-bold text-emerald-400">${diffMins === 0 ? "即將到達" : diffMins + " 分鐘"}</span>
-              `;
-              container.appendChild(div);
-            }
-          });
+                <div class="overflow-x-auto">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th style="width:48px;">節</th>
+                                <th style="width:110px;">時間</th>
+                                <th>課堂資訊</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-body">
+                            <tr><td colspan="3" class="text-center text-slate-500 py-6">⏳ 載入課表中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 功課 + Deadline 雙欄 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="card-custom">
+                    <div class="section-title text-rose-400 text-sm">📚 功課紀錄</div>
+                    <div id="homework-container">
+                        <div class="text-slate-500 text-sm py-2">今日無功課紀錄</div>
+                    </div>
+                </div>
+                <div class="card-custom">
+                    <div class="section-title text-amber-400 text-sm">⏳ 文件 Deadline</div>
+                    <div id="deadline-container">
+                        <div class="text-slate-500 text-sm py-2">今日無截止需求</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 會議 -->
+            <div class="card-custom">
+                <div class="section-title text-purple-400 text-sm">📌 今日會議</div>
+                <div id="meetings-container">
+                    <div class="text-slate-500 text-sm py-2">今日無會議</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== 右側：巴士 + Shuttle + 雷達 (5 欄) ====== -->
+        <div class="lg:col-span-5 space-y-5">
+
+            <!-- 九巴到站 -->
+            <div class="card-custom">
+                <div class="section-title text-emerald-400">
+                    🚌 形點 II · 往元朗
+                    <span class="text-xs font-normal text-slate-500 ml-auto" id="bus-timestamp">更新中</span>
+                </div>
+                <div id="kmb-bus-container">
+                    <div class="text-slate-500 text-sm py-4 text-center">⏳ 載入巴士到站時間...</div>
+                </div>
+            </div>
+
+            <!-- 穿梭巴士 iframe -->
+            <div class="card-custom">
+                <div class="section-title text-amber-300">
+                    🚐 屋苑穿梭巴士
+                    <a href="https://eta-app.socif.co/sunbus?site=gds&lang=zh" target="_blank" 
+                       class="text-xs text-sky-400 hover:underline ml-auto">全螢幕 ↗</a>
+                </div>
+                <div class="rounded-lg overflow-hidden border border-slate-700/50 h-56 bg-slate-900">
+                    <iframe src="https://eta-app.socif.co/sunbus?site=gds&lang=zh" 
+                            class="w-full h-full border-0"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- 天氣雷達 -->
+            <div class="card-custom">
+                <div class="section-title text-sky-400">
+                    🌦 即時天氣雷達
+                    <span class="text-xs font-normal text-slate-500 ml-auto" id="radar-timestamp">--</span>
+                </div>
+                <div class="rounded-lg overflow-hidden border border-slate-700/50 bg-black/50 flex justify-center p-1">
+                    <img id="radar-img" 
+                         src="https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad_064_fix.gif" 
+                         alt="天文台雷達圖" 
+                         class="w-full max-h-52 object-contain"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%230a0e17%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%234f6a8a%22 font-size=%2216%22%3E雷達圖載入中%3C/text%3E%3C/svg%3E'">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- 底部狀態列 -->
+    <!-- ========================================================== -->
+    <div class="mt-6 pt-4 border-t border-slate-700/50 flex flex-wrap justify-between items-center text-sm text-slate-500 gap-3">
+        <span>
+            <span class="status-dot"></span>
+            系統正常 · 自動更新中
+        </span>
+        <span id="footer-clock">--:--:--</span>
+        <button onclick="refreshAll()" class="bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-full text-xs text-slate-300 transition">
+            ⟳ 重新整理
+        </button>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- JavaScript -->
+    <!-- ========================================================== -->
+    <script>
+        // ================================================================
+        //  設定
+        // ================================================================
+        const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw_bgy080wFKf3iybNhFDc0LBHmb0-84-fifMqF2P_50PUncokrrnk9mgr5w3jNawBR/exec";
+
+        // ================================================================
+        //  1. 時鐘
+        // ================================================================
+        function updateClock() {
+            const now = new Date();
+            const str = now.toLocaleString("zh-HK", {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            });
+            document.getElementById("system-time").textContent = str;
+            document.getElementById("footer-clock").textContent = 
+                now.toLocaleTimeString("zh-HK", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
-      } catch (e) {
-        console.error("KMB Error", e);
-      }
-    }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-    setInterval(() => {
-      document.getElementById("radar-img").src = "https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad_064_fix.gif?t=" + new Date().getTime();
-    }, 300000);
+        // ================================================================
+        //  2. 從 Google Sheets 載入資料
+        // ================================================================
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch(GOOGLE_API_URL, { redirect: "follow" });
+                const data = await response.json();
 
-    setInterval(fetchKmbETA, 30000);
+                // ---- 頂部狀態 ----
+                document.getElementById("current-date-display").textContent = 
+                    data.date + " (" + data.weekday + ")";
+                document.getElementById("cycle-day").textContent = data.cycleDay || "--";
+                document.getElementById("school-mode").textContent = data.mode || "全日";
+                document.getElementById("school-note").textContent = data.note || "無特別活動";
 
-    fetchDashboardData();
-    fetchKmbETA();
-  </script>
+                // ---- 課表 ----
+                const tbody = document.getElementById("schedule-body");
+                tbody.innerHTML = "";
+                if (data.schedule && data.schedule.length > 0) {
+                    const now = new Date();
+                    const currentMin = now.getHours() * 60 + now.getMinutes();
+
+                    data.schedule.forEach(item => {
+                        const tr = document.createElement("tr");
+                        let isNow = false;
+                        let extraClass = "";
+
+                        // 判斷是否為「小息 / 午膳」
+                        if (item.info.includes("小息")) extraClass = "break";
+                        else if (item.info.includes("午膳") || item.info.includes("午睡")) extraClass = "lunch";
+
+                        // 判斷目前課堂（如果有時間）
+                        if (item.time && item.time.includes('-')) {
+                            const [start, end] = item.time.split('-');
+                            const [sh, sm] = start.split(':').map(Number);
+                            const [eh, em] = end.split(':').map(Number);
+                            if (!isNaN(sh) && !isNaN(sm) && !isNaN(eh) && !isNaN(em)) {
+                                const startMin = sh * 60 + sm;
+                                const endMin = eh * 60 + em;
+                                if (currentMin >= startMin && currentMin < endMin) {
+                                    isNow = true;
+                                }
+                            }
+                        }
+
+                        if (isNow) extraClass += " now";
+                        if (extraClass) tr.className = extraClass.trim();
+
+                        tr.innerHTML = `
+                            <td class="font-bold text-slate-400">${item.period || ''}</td>
+                            <td class="font-mono text-xs text-sky-300/80">${item.time || ''}</td>
+                            <td>${item.info || ''}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-6">今日無課堂</td></tr>`;
+                }
+
+                // ---- 功課 ----
+                const hwBox = document.getElementById("homework-container");
+                hwBox.innerHTML = "";
+                if (data.homework && data.homework.length > 0) {
+                    data.homework.forEach(h => {
+                        const div = document.createElement("div");
+                        div.className = "hw-item";
+                        div.innerHTML = `
+                            <span><span class="text-rose-300 font-semibold">[${h.type}]</span> ${h.className} - ${h.title}</span>
+                        `;
+                        hwBox.appendChild(div);
+                    });
+                } else {
+                    hwBox.innerHTML = `<div class="text-slate-500 text-sm py-2">今日無功課紀錄</div>`;
+                }
+
+                // ---- Deadline ----
+                const dlBox = document.getElementById("deadline-container");
+                dlBox.innerHTML = "";
+                if (data.deadlines && data.deadlines.length > 0) {
+                    data.deadlines.forEach(d => {
+                        const div = document.createElement("div");
+                        div.className = "deadline-item";
+                        div.innerHTML = `
+                            <span>${d.item} <span class="text-slate-500 text-xs">(${d.dept})</span></span>
+                            <span class="text-amber-400 font-bold">${d.status}</span>
+                        `;
+                        dlBox.appendChild(div);
+                    });
+                } else {
+                    dlBox.innerHTML = `<div class="text-slate-500 text-sm py-2">今日無截止需求</div>`;
+                }
+
+                // ---- 會議 ----
+                const mBox = document.getElementById("meetings-container");
+                mBox.innerHTML = "";
+                if (data.meetings && data.meetings.length > 0) {
+                    data.meetings.forEach(m => {
+                        const div = document.createElement("div");
+                        div.className = "flex justify-between items-center p-2 bg-purple-950/30 rounded-lg border border-purple-800/30 mb-1";
+                        div.innerHTML = `
+                            <span>${m.title} <span class="text-slate-500 text-xs">${m.remark || ''}</span></span>
+                            <span class="font-mono text-purple-300 text-sm">${m.start}-${m.end}</span>
+                        `;
+                        mBox.appendChild(div);
+                    });
+                } else {
+                    mBox.innerHTML = `<div class="text-slate-500 text-sm py-2">今日無會議</div>`;
+                }
+
+            } catch (err) {
+                console.error("Google Sheets 同步失敗:", err);
+            }
+        }
+
+        // ================================================================
+        //  3. 九巴實時到站 (形點 II)
+        // ================================================================
+        // 形點 II 站號：BS10-T-1200-0 (往元朗方向)
+        // 參考：https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/BS10-T-1200-0
+
+        async function fetchKmbETA() {
+            const container = document.getElementById("kmb-bus-container");
+            const timestampEl = document.getElementById("bus-timestamp");
+
+            try {
+                const response = await fetch("https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/BS10-T-1200-0");
+                if (!response.ok) throw new Error("API 回應錯誤");
+                const json = await response.json();
+
+                if (json.data && json.data.length > 0) {
+                    container.innerHTML = "";
+                    const now = new Date();
+
+                    // 篩選路線（你常用的路線）
+                    const targetRoutes = ["268X", "68M", "968", "68X", "B1"];
+                    let shown = {};
+
+                    // 按路線排序
+                    const sorted = json.data
+                        .filter(item => targetRoutes.includes(item.route))
+                        .sort((a, b) => {
+                            const etaA = new Date(a.eta);
+                            const etaB = new Date(b.eta);
+                            return etaA - etaB;
+                        });
+
+                    if (sorted.length === 0) {
+                        container.innerHTML = `
+                            <div class="text-slate-500 text-sm py-4 text-center">
+                                🚫 暫時沒有巴士到站資訊
+                            </div>
+                        `;
+                    } else {
+                        let count = 0;
+                        sorted.forEach(item => {
+                            // 每條路線只顯示最近一班
+                            if (shown[item.route]) return;
+                            shown[item.route] = true;
+
+                            const etaDate = new Date(item.eta);
+                            const diffSec = Math.max(0, Math.floor((etaDate - now) / 1000));
+                            const diffMin = Math.floor(diffSec / 60);
+                            const remainSec = diffSec % 60;
+
+                            let etaText, etaClass = "";
+                            if (diffMin === 0 && remainSec < 30) {
+                                etaText = "🚨 到站";
+                                etaClass = "urgent";
+                            } else if (diffMin === 0) {
+                                etaText = remainSec + " 秒";
+                                etaClass = "urgent";
+                            } else if (diffMin <= 2) {
+                                etaText = diffMin + " 分鐘";
+                                etaClass = "urgent";
+                            } else if (diffMin <= 8) {
+                                etaText = diffMin + " 分鐘";
+                                etaClass = "";
+                            } else {
+                                etaText = diffMin + " 分鐘";
+                                etaClass = "";
+                            }
+
+                            const div = document.createElement("div");
+                            div.className = "bus-item";
+                            div.innerHTML = `
+                                <span class="route">${item.route}</span>
+                                <span class="dest">往 ${item.dest_tc || '元朗'}</span>
+                                <span class="eta ${etaClass}">${etaText}</span>
+                            `;
+                            container.appendChild(div);
+                            count++;
+                        });
+
+                        if (count === 0) {
+                            container.innerHTML = `
+                                <div class="text-slate-500 text-sm py-4 text-center">
+                                    🚫 暫無巴士到站
+                                </div>
+                            `;
+                        }
+                    }
+
+                    timestampEl.textContent = "🔄 " + new Date().toLocaleTimeString("zh-HK");
+
+                } else {
+                    container.innerHTML = `
+                        <div class="text-slate-500 text-sm py-4 text-center">
+                            ⏳ 等待巴士到站數據...
+                        </div>
+                    `;
+                }
+
+            } catch (err) {
+                console.error("九巴 API 錯誤:", err);
+                container.innerHTML = `
+                    <div class="text-slate-500 text-sm py-4 text-center">
+                        ⚠️ 無法載入巴士資料 (${err.message || '網絡問題'})
+                    </div>
+                `;
+            }
+        }
+
+        // ================================================================
+        //  4. 天氣雷達圖 (自動刷新)
+        // ================================================================
+        function updateRadar() {
+            const img = document.getElementById("radar-img");
+            // 使用靜態圖像 + 時間戳避免快取
+            img.src = "https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad_064_fix.gif?t=" + Date.now();
+
+            const now = new Date();
+            document.getElementById("radar-timestamp").textContent = 
+                now.toLocaleTimeString("zh-HK", { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ================================================================
+        //  5. 全部重新整理
+        // ================================================================
+        function refreshAll() {
+            fetchDashboardData();
+            fetchKmbETA();
+            updateRadar();
+            updateClock();
+
+            // 同時重載 iframe
+            const iframe = document.querySelector('iframe');
+            if (iframe) {
+                const src = iframe.src;
+                iframe.src = '';
+                setTimeout(() => { iframe.src = src; }, 100);
+            }
+
+            console.log("✅ 儀表板已全面更新", new Date().toLocaleString());
+        }
+
+        // ================================================================
+        //  6. 啟動 & 定時器
+        // ================================================================
+
+        // 首次載入
+        fetchDashboardData();
+        fetchKmbETA();
+        updateRadar();
+
+        // 定時更新
+        setInterval(fetchKmbETA, 30000);      // 巴士 30 秒
+        setInterval(updateRadar, 300000);     // 雷達 5 分鐘
+        setInterval(fetchDashboardData, 60000); // Google Sheets 每分鐘（更新「目前課堂」）
+        setInterval(updateClock, 1000);        // 時鐘每秒
+
+        // 頁面可見時重新整理
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) {
+                refreshAll();
+            }
+        });
+
+        // 讓 refreshAll 全域可用
+        window.refreshAll = refreshAll;
+
+        console.log("🏫 教師智慧儀表板已啟動！");
+    </script>
+
 </body>
 </html>
