@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>教師個人智慧儀表板 Dashboard</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
@@ -22,7 +21,6 @@
       <p id="system-time" class="text-slate-400 text-sm mt-1">載入時間中...</p>
     </div>
     
-    <!-- 日期與 Cycle 狀態卡片 -->
     <div class="flex gap-3 text-center">
       <div class="card px-4 py-2">
         <div class="text-xs text-slate-400">當天 Cycle</div>
@@ -39,11 +37,13 @@
     </div>
   </div>
 
-  <!-- 主要內容網格 (雙欄佈局) -->
+  <!-- 主要內容網格 -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- 左側：每日課表主控台 (占 7 欄) -->
+    <!-- 左側：課表、功課、Deadline、會議 (占 7 欄) -->
     <div class="lg:col-span-7 space-y-6">
+      
+      <!-- 固定課表 -->
       <div class="card p-5">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
@@ -68,15 +68,39 @@
         </div>
       </div>
 
-      <!-- 突發會議卡片 -->
-      <div class="card p-5">
-        <h2 class="text-lg font-bold text-amber-400 mb-3 flex items-center gap-2">
-          <span>📌</span> 當日突發會議紀錄
-        </h2>
-        <div id="meetings-container" class="space-y-2 text-sm">
-          <div class="p-3 bg-slate-800/60 rounded border border-slate-700/50 text-slate-400">今日無突發會議</div>
+      <!-- 今日功課與文件 Deadline -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- 功課派發/收集 -->
+        <div class="card p-4">
+          <h3 class="text-md font-bold text-rose-400 mb-2 flex items-center gap-1.5">
+            <span>📚</span> 功課派發 / 收集紀錄
+          </h3>
+          <div id="homework-container" class="space-y-2 text-xs">
+            <div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無功課紀錄</div>
+          </div>
+        </div>
+
+        <!-- 文件 Deadline -->
+        <div class="card p-4">
+          <h3 class="text-md font-bold text-amber-400 mb-2 flex items-center gap-1.5">
+            <span>⏳</span> 文件 / 教務 Deadline
+          </h3>
+          <div id="deadline-container" class="space-y-2 text-xs">
+            <div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無文件截止需求</div>
+          </div>
         </div>
       </div>
+
+      <!-- 突發會議卡片 -->
+      <div class="card p-4">
+        <h2 class="text-md font-bold text-purple-400 mb-2 flex items-center gap-2">
+          <span>📌</span> 當日突發會議紀錄
+        </h2>
+        <div id="meetings-container" class="space-y-2 text-xs">
+          <div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無突發會議</div>
+        </div>
+      </div>
+
     </div>
 
     <!-- 右側：交通 ETA & 天氣資訊 (占 5 欄) -->
@@ -85,21 +109,20 @@
       <!-- 1. 形點 II 九巴實時到站 -->
       <div class="card p-5">
         <h2 class="text-lg font-bold text-emerald-400 mb-3 flex items-center gap-2">
-          <span>🚌</span> 形點 II 九巴實時到站 (往市區方向)
+          <span>🚌</span> 形點 II 九巴實時到站
         </h2>
-        
         <div class="space-y-2.5" id="kmb-bus-container">
           <div class="p-3 bg-slate-800 rounded-lg border border-slate-700 text-xs text-slate-400">
-            ⏳ 正在讀取形點 II 九巴到站資料...
+            ⏳ 正在載入形點 II 巴士到站時間...
           </div>
         </div>
       </div>
 
-      <!-- 2. 屋苑 Shuttle 實時面板 (直接內嵌 SOCIF) -->
+      <!-- 2. 屋苑 Shuttle 實時面板 (SOCIF 內嵌窗口) -->
       <div class="card p-5">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-lg font-bold text-amber-300 flex items-center gap-2">
-            <span>🚍</span> 屋苑 Shuttle (SunBus) 實時地圖
+            <span>🚍</span> 屋苑 Shuttle (SunBus) 地圖
           </h2>
           <a href="https://eta-app.socif.co/sunbus?site=gds&lang=zh" target="_blank" class="text-xs text-sky-400 hover:underline">全螢幕 ↗</a>
         </div>
@@ -111,12 +134,12 @@
       <!-- 3. 天文台即時氣象雷達圖 -->
       <div class="card p-5">
         <h2 class="text-lg font-bold text-sky-400 mb-3 flex items-center gap-2">
-          <span>🌧️</span> 天文台即時雷達圖 (64公里)
+          <span>🌧️</span> 天文台即時雷達圖像
         </h2>
-        <div class="rounded-lg overflow-hidden border border-slate-700 bg-black flex justify-center">
-          <img id="radar-img" src="https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad_064_fix.gif" alt="天文台雷達圖" class="w-full h-auto max-h-60 object-contain" onerror="this.src='https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad064_fix.gif'">
+        <div class="rounded-lg overflow-hidden border border-slate-700 bg-black flex justify-center p-2">
+          <img id="radar-img" src="https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad_064_fix.gif" alt="天文台雷達圖" class="w-full h-auto max-h-56 object-contain" onerror="this.src='https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad064_fix.gif'">
         </div>
-        <p class="text-xs text-slate-500 mt-2 text-right">自動每 5 分鐘重載圖像</p>
+        <p class="text-xs text-slate-500 mt-2 text-right">每 5 分鐘自動重載</p>
       </div>
 
     </div>
@@ -125,7 +148,6 @@
   <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw_bgy080wFKf3iybNhFDc0LBHmb0-84-fifMqF2P_50PUncokrrnk9mgr5w3jNawBR/exec";
 
-    // 更新時鐘
     function updateClock() {
       const now = new Date();
       document.getElementById("system-time").innerText = now.toLocaleString("zh-HK", {
@@ -136,7 +158,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 1. 抓取 Google Sheets 資料 (修正 CORS 跨網域重定向)
+    // 抓取 Google Sheets 資料
     async function fetchDashboardData() {
       try {
         const response = await fetch(GOOGLE_API_URL, { redirect: "follow" });
@@ -147,17 +169,16 @@
         document.getElementById("school-mode").innerText = data.mode || "全日";
         document.getElementById("school-note").innerText = data.note || "無特別活動";
 
+        // 課表
         const tbody = document.getElementById("schedule-body");
         tbody.innerHTML = "";
         if (data.schedule && data.schedule.length > 0) {
           data.schedule.forEach(item => {
             const tr = document.createElement("tr");
             tr.className = "hover:bg-slate-800/50 transition-colors";
-            
             if (item.info.includes("小息") || item.info.includes("午膳") || item.info.includes("Roll Call")) {
               tr.className += " text-slate-500 italic bg-slate-800/30";
             }
-
             tr.innerHTML = `
               <td class="p-2.5 font-bold text-slate-400">${item.period}</td>
               <td class="p-2.5 font-mono text-xs text-sky-300">${item.time}</td>
@@ -167,83 +188,94 @@
           });
         }
 
-        const meetingsContainer = document.getElementById("meetings-container");
-        meetingsContainer.innerHTML = "";
+        // 功課
+        const hwBox = document.getElementById("homework-container");
+        hwBox.innerHTML = "";
+        if (data.homework && data.homework.length > 0) {
+          data.homework.forEach(h => {
+            const div = document.createElement("div");
+            div.className = "p-2 bg-slate-800 rounded border border-slate-700 flex justify-between";
+            div.innerHTML = `<span class="font-bold text-slate-200">[${h.type}] ${h.className} - ${h.title}</span>`;
+            hwBox.appendChild(div);
+          });
+        } else {
+          hwBox.innerHTML = `<div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無功課紀錄</div>`;
+        }
+
+        // Deadline
+        const dlBox = document.getElementById("deadline-container");
+        dlBox.innerHTML = "";
+        if (data.deadlines && data.deadlines.length > 0) {
+          data.deadlines.forEach(d => {
+            const div = document.createElement("div");
+            div.className = "p-2 bg-slate-800 rounded border border-slate-700 flex justify-between";
+            div.innerHTML = `<span>${d.item} (${d.dept})</span><span class="text-amber-400 font-bold">${d.status}</span>`;
+            dlBox.appendChild(div);
+          });
+        } else {
+          dlBox.innerHTML = `<div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無文件截止需求</div>`;
+        }
+
+        // 會議
+        const mBox = document.getElementById("meetings-container");
+        mBox.innerHTML = "";
         if (data.meetings && data.meetings.length > 0) {
           data.meetings.forEach(m => {
             const div = document.createElement("div");
-            div.className = "p-3 bg-amber-950/40 border border-amber-800/50 rounded text-amber-200 flex justify-between";
-            div.innerHTML = `
-              <div>
-                <span class="font-bold">${m.title}</span>
-                <span class="text-xs text-amber-400 block">${m.remark || ""}</span>
-              </div>
-              <span class="text-xs font-mono bg-amber-900/60 px-2 py-1 rounded text-amber-300">${m.start} - ${m.end}</span>
-            `;
-            meetingsContainer.appendChild(div);
+            div.className = "p-2 bg-purple-950/40 border border-purple-800/50 rounded flex justify-between";
+            div.innerHTML = `<span>${m.title} (${m.remark || ""})</span><span class="font-mono text-purple-300">${m.start}-${m.end}</span>`;
+            mBox.appendChild(div);
           });
         } else {
-          meetingsContainer.innerHTML = `<div class="p-3 bg-slate-800/60 rounded border border-slate-700/50 text-slate-400">今日無突發會議</div>`;
+          mBox.innerHTML = `<div class="p-2 bg-slate-800/60 rounded text-slate-400">今日無突發會議</div>`;
         }
 
       } catch (err) {
-        console.error("試算表同步失敗:", err);
+        console.error("同步失敗:", err);
       }
     }
 
-    // 2. 抓取九巴實時 ETA (關注形點 II 常用路線 268X, 68M, 968)
-    const routesToFetch = [
-      { route: "268X", dir: "O", service_type: 1, name: "往 佐敦" },
-      { route: "68M", dir: "O", service_type: 1, name: "往 荃灣站" },
-      { route: "968", dir: "O", service_type: 1, name: "往 銅鑼灣" }
-    ];
-
+    // 抓取形點 II 九巴實時 ETA (通用站號：形點 II 往市區)
     async function fetchKmbETA() {
       const container = document.getElementById("kmb-bus-container");
-      container.innerHTML = "";
+      try {
+        const res = await fetch("https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/BS10-T-1200-0");
+        const json = await res.json();
+        
+        if (json.data && json.data.length > 0) {
+          container.innerHTML = "";
+          // 篩選 268X, 68M, 968
+          const targetRoutes = ["268X", "68M", "968"];
+          let routesShown = {};
 
-      for (let r of routesToFetch) {
-        try {
-          const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/route-eta/${r.route}/${r.service_type}`);
-          const json = await res.json();
-          
-          if (json.data && json.data.length > 0) {
-            // 篩選出出沙田/市區方向前幾站 (形點 II 範圍)
-            const list = json.data.filter(i => i.dir === r.dir && i.eta).slice(0, 2);
-            
-            let minsText = "暫無班次";
-            if (list.length > 0) {
-              const diffMins = Math.max(0, Math.round((new Date(list[0].eta) - new Date()) / 60000));
-              minsText = diffMins === 0 ? "即將到達" : diffMins + " 分鐘";
+          json.data.forEach(item => {
+            if (targetRoutes.includes(item.route) && item.eta && !routesShown[item.route]) {
+              routesShown[item.route] = true;
+              const diffMins = Math.max(0, Math.round((new Date(item.eta) - new Date()) / 60000));
+              const div = document.createElement("div");
+              div.className = "p-3 bg-slate-800 rounded-lg flex justify-between items-center border border-slate-700";
+              div.innerHTML = `
+                <div>
+                  <div class="font-bold text-white">九巴 ${item.route} <span class="text-xs text-slate-400">往 ${item.dest_tc}</span></div>
+                  <div class="text-xs text-slate-400">形點 II 巴士站</div>
+                </div>
+                <span class="text-lg font-bold text-emerald-400">${diffMins === 0 ? "即將到達" : diffMins + " 分鐘"}</span>
+              `;
+              container.appendChild(div);
             }
-
-            const div = document.createElement("div");
-            div.className = "p-3 bg-slate-800 rounded-lg flex justify-between items-center border border-slate-700";
-            div.innerHTML = `
-              <div>
-                <div class="font-bold text-base text-white">九巴 ${r.route} <span class="text-xs text-slate-400 font-normal">${r.name}</span></div>
-                <div class="text-xs text-slate-400">形點 II / 元朗大棠路站</div>
-              </div>
-              <div class="text-right">
-                <span class="text-lg font-bold text-emerald-400">${minsText}</span>
-              </div>
-            `;
-            container.appendChild(div);
-          }
-        } catch (e) {
-          console.error("KMB API Error", e);
+          });
         }
+      } catch (e) {
+        console.error("KMB Error", e);
       }
     }
 
-    // 3. 定時刷新設定
     setInterval(() => {
       document.getElementById("radar-img").src = "https://www.hko.gov.hk/wxinfo/radars/radar_range1/rad_064_fix.gif?t=" + new Date().getTime();
-    }, 300000); // 5 分鐘重載雷達圖
+    }, 300000);
 
-    setInterval(fetchKmbETA, 30000); // 30 秒更新九巴到站時間
+    setInterval(fetchKmbETA, 30000);
 
-    // 初始化執行
     fetchDashboardData();
     fetchKmbETA();
   </script>
