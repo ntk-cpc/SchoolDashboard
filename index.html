@@ -500,14 +500,18 @@
             document.getElementById("school-mode").textContent = data.mode || "全日";
             document.getElementById("school-note").textContent = data.note || "無特別活動";
 
-            // ---- 課表 ----
+            // ---- 課表（改用 data.sched 因為你個 Apps Script 用呢個名） ----
             const tbody = document.getElementById("schedule-body");
             tbody.innerHTML = "";
-            if (data.schedule && data.schedule.length > 0) {
+            
+            // 試吓用 sched，如果冇就用 schedule
+            const scheduleData = data.sched || data.schedule || [];
+            
+            if (scheduleData.length > 0) {
                 const now = new Date();
                 const currentMin = now.getHours() * 60 + now.getMinutes();
 
-                data.schedule.forEach(item => {
+                scheduleData.forEach(item => {
                     const tr = document.createElement("tr");
                     let extraClass = "";
                     let isNow = false;
