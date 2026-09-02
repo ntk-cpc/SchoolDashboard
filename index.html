@@ -485,8 +485,6 @@
         document.getElementById("footer-clock").textContent =
             now.toLocaleTimeString("zh-HK", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
-    setInterval(updateClock, 1000);
-    updateClock();
 
     async function fetchDashboardData() {
         try {
@@ -606,9 +604,12 @@
         console.log("✅ 儀表板已更新", new Date().toLocaleString());
     }
 
+    // 初始化與定時器設定
+    updateClock();
     fetchDashboardData();
-    setInterval(fetchDashboardData, 60000);
+    
     setInterval(updateClock, 1000);
+    setInterval(fetchDashboardData, 60000);
 
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) refreshAll();
