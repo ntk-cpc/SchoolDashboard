@@ -35,6 +35,7 @@
             flex-direction: column;
         }
 
+        /* ===== 卡片 ===== */
         .card {
             background: linear-gradient(145deg, #141c2a, #0e1520);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -68,6 +69,7 @@
             border-radius: 30px;
         }
 
+        /* ===== 頂部 ===== */
         .top-bar {
             display: flex;
             flex-wrap: wrap;
@@ -121,6 +123,7 @@
         .stat-emerald .value { color: #4fcf8a; }
         .stat-sky .value { color: #5bb8ff; }
 
+        /* ===== 主網格：3 欄 ===== */
         .main-grid {
             flex: 1;
             display: grid;
@@ -129,6 +132,7 @@
             min-height: 0;
         }
 
+        /* ===== 課表 ===== */
         .schedule-scroll {
             overflow-y: auto;
             flex: 1;
@@ -196,6 +200,7 @@
             width: 110px;
         }
 
+        /* ===== 穿梭巴士 ===== */
         .shuttle-wrapper {
             flex: 1;
             min-height: 0;
@@ -222,6 +227,7 @@
             mix-blend-mode: multiply;
         }
 
+        /* ===== 事務 ===== */
         .item-list {
             overflow-y: auto;
             flex: 1;
@@ -252,7 +258,6 @@
         .list-item.hw { border-left-color: #f472b6; }
         .list-item.dl { border-left-color: #fbbf24; }
         .list-item.mtg { border-left-color: #a78bfa; }
-        .list-item.activity { border-left-color: #34d399; }
 
         .empty-state {
             color: #4f6a8a;
@@ -293,6 +298,7 @@
             margin-bottom: 3px;
         }
 
+        /* ===== 底部 ===== */
         .footer-bar {
             flex-shrink: 0;
             margin-top: 8px;
@@ -334,6 +340,7 @@
             background: rgba(255, 255, 255, 0.10);
         }
 
+        /* ===== iPad 直向微調 ===== */
         @media (max-width: 1024px) {
             body { padding: 6px 8px; }
             .card { padding: 8px 10px; }
@@ -366,6 +373,7 @@
 
 <div class="app-container">
 
+    <!-- ====== 頂部 ====== -->
     <div class="top-bar">
         <div>
             <h1>🏫 教師儀表板</h1>
@@ -387,8 +395,10 @@
         </div>
     </div>
 
+    <!-- ====== 主網格：3 欄 ====== -->
     <div class="main-grid">
 
+        <!-- 欄 1：課表 -->
         <div class="card">
             <div class="card-title">
                 📅 今日課表
@@ -410,34 +420,25 @@
             </div>
         </div>
 
+        <!-- 欄 2：事務 -->
         <div class="card">
             <div class="card-title">
                 📋 今日事務
                 <span class="badge">總覽</span>
             </div>
             <div class="tasks-area">
-
-                <div class="task-block">
-                    <div class="section-label" style="color: #34d399;">🏃 學生活動</div>
-                    <div class="item-list" id="activity-container">
-                        <div class="empty-state">今日無學生活動</div>
-                    </div>
-                </div>
-
                 <div class="task-block">
                     <div class="section-label" style="color: #f472b6;">📚 功課</div>
                     <div class="item-list" id="homework-container">
                         <div class="empty-state">今日無功課紀錄</div>
                     </div>
                 </div>
-
                 <div class="task-block">
                     <div class="section-label" style="color: #fbbf24;">⏳ 文件 Deadline</div>
                     <div class="item-list" id="deadline-container">
                         <div class="empty-state">今日無截止需求</div>
                     </div>
                 </div>
-
                 <div class="task-block" style="flex: 0 0 auto;">
                     <div class="section-label" style="color: #a78bfa;">📌 今日會議</div>
                     <div id="meetings-container">
@@ -447,6 +448,7 @@
             </div>
         </div>
 
+        <!-- 欄 3：穿梭巴士 -->
         <div class="card">
             <div class="card-title">
                 🚐 屋苑穿梭巴士
@@ -460,6 +462,7 @@
         </div>
     </div>
 
+    <!-- ====== 底部 ====== -->
     <div class="footer-bar">
         <span><span class="dot"></span>系統正常 · 自動更新</span>
         <span id="footer-clock">--:--:--</span>
@@ -468,11 +471,9 @@
 
 </div>
 
+<!-- ========================================================== -->
 <script>
-    // ================================================================
-    //  ⚠️ 重要！將下面條 URL 換成你新部署嘅 Google Apps Script URL
-    // ================================================================
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxrAKNZ6rTnOh7zkto1UTDRhtdMZIex9bIRyeOnN_-LWfTflWHcbxMrQjGYcoJe_cs/exec";
+    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw_bgy080wFKf3iybNhFDc0LBHmb0-84-fifMqF2P_50PUncokrrnk9mgr5w3jNawBR/exec";
 
     function updateClock() {
         const now = new Date();
@@ -484,15 +485,11 @@
         document.getElementById("footer-clock").textContent =
             now.toLocaleTimeString("zh-HK", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
-    setInterval(updateClock, 1000);
-    updateClock();
 
     async function fetchDashboardData() {
         try {
             const response = await fetch(GOOGLE_API_URL, { redirect: "follow" });
             const data = await response.json();
-
-            console.log("📊 接收到嘅資料:", data);
 
             document.getElementById("current-date-display").textContent =
                 data.date + " (" + data.weekday + ")";
@@ -503,14 +500,11 @@
             // ---- 課表 ----
             const tbody = document.getElementById("schedule-body");
             tbody.innerHTML = "";
-            
-            const scheduleData = data.schedule || [];
-            
-            if (scheduleData.length > 0) {
+            if (data.schedule && data.schedule.length > 0) {
                 const now = new Date();
                 const currentMin = now.getHours() * 60 + now.getMinutes();
 
-                scheduleData.forEach(item => {
+                data.schedule.forEach(item => {
                     const tr = document.createElement("tr");
                     let extraClass = "";
                     let isNow = false;
@@ -541,23 +535,6 @@
                 });
             } else {
                 tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
-            }
-
-            // ---- 學生活動 ----
-            const actBox = document.getElementById("activity-container");
-            actBox.innerHTML = "";
-            if (data.activities && data.activities.length > 0) {
-                data.activities.forEach(a => {
-                    const div = document.createElement("div");
-                    div.className = "list-item activity";
-                    div.innerHTML = `
-                        <span>${a.date || ''} ${a.title} ${a.location ? '(@' + a.location + ')' : ''}</span>
-                        <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
-                    `;
-                    actBox.appendChild(div);
-                });
-            } else {
-                actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
             }
 
             // ---- 功課 ----
@@ -601,8 +578,8 @@
                     const div = document.createElement("div");
                     div.className = "list-item mtg";
                     div.innerHTML = `
-                        <span>${m.title} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
-                        <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start || ''}-${m.end || ''}</span>
+                        <span>${m.title} <span style="color:#4f6a8a;font-size:12px;">${m.remark || ''}</span></span>
+                        <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start}-${m.end}</span>
                     `;
                     mBox.appendChild(div);
                 });
@@ -627,9 +604,12 @@
         console.log("✅ 儀表板已更新", new Date().toLocaleString());
     }
 
+    // 初始化與定時器設定
+    updateClock();
     fetchDashboardData();
-    setInterval(fetchDashboardData, 60000);
+    
     setInterval(updateClock, 1000);
+    setInterval(fetchDashboardData, 60000);
 
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) refreshAll();
