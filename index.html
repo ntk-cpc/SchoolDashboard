@@ -243,37 +243,38 @@
         }
 
         .list-item {
-            padding: 6px 10px;
+            padding: 5px 8px;
             border-radius: 6px;
             margin-bottom: 3px;
-            font-size: 16px;
+            font-size: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: rgba(255, 255, 255, 0.02);
             border-left: 4px solid #4f6a8a;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .list-item.hw { border-left-color: #f472b6; }
         .list-item.dl { border-left-color: #fbbf24; }
+        .list-item.act { border-left-color: #38bdf8; }
         .list-item.mtg { border-left-color: #a78bfa; }
 
         .empty-state {
             color: #4f6a8a;
-            font-size: 15px;
-            padding: 6px 0;
+            font-size: 13px;
+            padding: 4px 0;
             text-align: center;
         }
 
         .section-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
             flex-shrink: 0;
-            padding: 3px 0;
+            padding: 2px 0;
         }
 
         .section-label:first-of-type {
@@ -285,6 +286,7 @@
             display: flex;
             flex-direction: column;
             min-height: 0;
+            gap: 4px;
         }
 
         .tasks-area .task-block {
@@ -292,10 +294,6 @@
             display: flex;
             flex-direction: column;
             min-height: 0;
-        }
-
-        .tasks-area .task-block:not(:last-child) {
-            margin-bottom: 3px;
         }
 
         /* ===== 底部 ===== */
@@ -340,7 +338,7 @@
             background: rgba(255, 255, 255, 0.10);
         }
 
-        /* ===== iPad 直向微調 ===== */
+        /* ===== Responsive ===== */
         @media (max-width: 1024px) {
             body { padding: 6px 8px; }
             .card { padding: 8px 10px; }
@@ -353,8 +351,8 @@
             .sch-table .period { font-size: 12px; width: 30px; }
             .sch-table .time-col { font-size: 11px; width: 80px; }
             .card-title { font-size: 15px; }
-            .list-item { font-size: 13px; padding: 4px 8px; }
-            .empty-state { font-size: 13px; }
+            .list-item { font-size: 12px; padding: 3px 6px; }
+            .empty-state { font-size: 12px; }
             .section-label { font-size: 12px; }
             .footer-bar { font-size: 11px; }
         }
@@ -420,29 +418,39 @@
             </div>
         </div>
 
-        <!-- 欄 2：事務 -->
+        <!-- 欄 2：事務 (擴充為 4 項) -->
         <div class="card">
             <div class="card-title">
                 📋 今日事務
                 <span class="badge">總覽</span>
             </div>
             <div class="tasks-area">
+                <!-- 1. 功課 -->
                 <div class="task-block">
                     <div class="section-label" style="color: #f472b6;">📚 功課</div>
                     <div class="item-list" id="homework-container">
                         <div class="empty-state">今日無功課紀錄</div>
                     </div>
                 </div>
+                <!-- 2. 文件 Deadline -->
                 <div class="task-block">
                     <div class="section-label" style="color: #fbbf24;">⏳ 文件 Deadline</div>
                     <div class="item-list" id="deadline-container">
                         <div class="empty-state">今日無截止需求</div>
                     </div>
                 </div>
-                <div class="task-block" style="flex: 0 0 auto;">
+                <!-- 3. 學生活動 / 課後安排 (新加入) -->
+                <div class="task-block">
+                    <div class="section-label" style="color: #38bdf8;">🎨 學生活動/課後安排</div>
+                    <div class="item-list" id="activities-container">
+                        <div class="empty-state">今日無學生活動</div>
+                    </div>
+                </div>
+                <!-- 4. 今日會議 -->
+                <div class="task-block">
                     <div class="section-label" style="color: #a78bfa;">📌 今日會議</div>
-                    <div id="meetings-container">
-                        <div class="empty-state" style="padding: 3px 0;">今日無會議</div>
+                    <div class="item-list" id="meetings-container">
+                        <div class="empty-state">今日無會議</div>
                     </div>
                 </div>
             </div>
@@ -537,7 +545,7 @@
                 tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
             }
 
-            // ---- 功課 ----
+            // ---- 1. 功課 ----
             const hwBox = document.getElementById("homework-container");
             hwBox.innerHTML = "";
             if (data.homework && data.homework.length > 0) {
@@ -553,7 +561,7 @@
                 hwBox.innerHTML = `<div class="empty-state">今日無功課紀錄</div>`;
             }
 
-            // ---- Deadline ----
+            // ---- 2. Deadline ----
             const dlBox = document.getElementById("deadline-container");
             dlBox.innerHTML = "";
             if (data.deadlines && data.deadlines.length > 0) {
@@ -570,7 +578,24 @@
                 dlBox.innerHTML = `<div class="empty-state">今日無截止需求</div>`;
             }
 
-            // ---- 會議 ----
+            // ---- 3. 學生活動 / 課後安排 (新功能) ----
+            const actBox = document.getElementById("activities-container");
+            actBox.innerHTML = "";
+            if (data.activities && data.activities.length > 0) {
+                data.activities.forEach(a => {
+                    const div = document.createElement("div");
+                    div.className = "list-item act";
+                    div.innerHTML = `
+                        <span>${a.title} <span style="color:#4f6a8a;font-size:12px;">(${a.location || ''})</span></span>
+                        <span style="color:#38bdf8;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
+                    `;
+                    actBox.appendChild(div);
+                });
+            } else {
+                actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
+            }
+
+            // ---- 4. 會議 ----
             const mBox = document.getElementById("meetings-container");
             mBox.innerHTML = "";
             if (data.meetings && data.meetings.length > 0) {
@@ -584,7 +609,7 @@
                     mBox.appendChild(div);
                 });
             } else {
-                mBox.innerHTML = `<div class="empty-state" style="padding:3px 0;">今日無會議</div>`;
+                mBox.innerHTML = `<div class="empty-state">今日無會議</div>`;
             }
 
         } catch (err) {
@@ -604,12 +629,10 @@
         console.log("✅ 儀表板已更新", new Date().toLocaleString());
     }
 
-    // 初始化與定時器設定
     updateClock();
     fetchDashboardData();
-    
-    setInterval(updateClock, 1000);
     setInterval(fetchDashboardData, 60000);
+    setInterval(updateClock, 1000);
 
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) refreshAll();
@@ -621,3 +644,4 @@
 
 </body>
 </html>
+
