@@ -472,7 +472,7 @@
     // ================================================================
     //  ⚠️ 將下面條 URL 換成你嘅 Google Apps Script URL
     // ================================================================
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyG_pydkHOwM0xbIGnhIgcNizzapvmlJYrN8azzlGjbnl99_wnE8KrO9i5KDAVNpJvw/exec";
+    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbzGlMyUt-NtIzGpVffQqLSpb3g8CKimJ49oqUNy1qgOqul_bA1kiMyyytMJ4AealD_h/exec";
 
     function updateClock() {
         const now = new Date();
@@ -543,7 +543,7 @@
                 tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
             }
 
-            // ---- 學生活動（顯示順序：活動名稱 + 地點 + 時間） ----
+            // ---- 學生活動 ----
             const actBox = document.getElementById("activity-container");
             actBox.innerHTML = "";
             if (data.activities && data.activities.length > 0) {
@@ -551,8 +551,7 @@
                     const div = document.createElement("div");
                     div.className = "list-item activity";
                     div.innerHTML = `
-                        <span>${a.title} ${a.location ? '(@' + a.location + ')' : ''}</span>
-                        <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
+                        <span>${a.start || ''}-${a.end || ''} ${a.content} ${a.location ? '(@' + a.location + ')' : ''}</span>
                     `;
                     actBox.appendChild(div);
                 });
@@ -568,7 +567,7 @@
                     const div = document.createElement("div");
                     div.className = "list-item hw";
                     div.innerHTML = `
-                        <span><span style="color:#f472b6;font-weight:600;">[${h.type}]</span> ${h.className} - ${h.title}</span>
+                        <span><span style="color:#f472b6;font-weight:600;">[${h.category}]</span> ${h.class} - ${h.item}</span>
                     `;
                     hwBox.appendChild(div);
                 });
@@ -579,13 +578,13 @@
             // ---- Deadline ----
             const dlBox = document.getElementById("deadline-container");
             dlBox.innerHTML = "";
-            if (data.deadlines && data.deadlines.length > 0) {
-                data.deadlines.forEach(d => {
+            if (data.files && data.files.length > 0) {
+                data.files.forEach(f => {
                     const div = document.createElement("div");
                     div.className = "list-item dl";
                     div.innerHTML = `
-                        <span>${d.item} <span style="color:#4f6a8a;font-size:12px;">(${d.dept})</span></span>
-                        <span style="color:#fbbf24;font-weight:700;">${d.status}</span>
+                        <span>${f.item} <span style="color:#4f6a8a;font-size:12px;">(${f.department})</span></span>
+                        <span style="color:#fbbf24;font-weight:700;">${f.status}</span>
                     `;
                     dlBox.appendChild(div);
                 });
@@ -601,7 +600,7 @@
                     const div = document.createElement("div");
                     div.className = "list-item mtg";
                     div.innerHTML = `
-                        <span>${m.title} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
+                        <span>${m.content} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
                         <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start || ''}-${m.end || ''}</span>
                     `;
                     mBox.appendChild(div);
