@@ -553,22 +553,31 @@
                 tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
             }
 
-            // ---- 學生活動 (activities) ----
-            const actBox = document.getElementById("activity-container");
-            actBox.innerHTML = "";
-            if (data.activities && data.activities.length > 0 && data.activities[0].content) {
-                data.activities.forEach(a => {
-                    const div = document.createElement("div");
-                    div.className = "list-item activity";
-                    div.innerHTML = `
-                        <span>${a.content || ''} ${a.location ? '(@' + a.location + ')' : ''}</span>
-                        <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
-                    `;
-                    actBox.appendChild(div);
-                });
-            } else {
-                actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
-            }
+       // ---- 學生活動 (activities) ----
+const actBox = document.getElementById("activity-container");
+actBox.innerHTML = "";
+if (data.activities && data.activities.length > 0 && data.activities[0].content) {
+    data.activities.forEach(a => {
+        const div = document.createElement("div");
+        div.className = "list-item activity";
+        
+        // 將時間轉為 HH:MM 格式
+        const startTime = formatTimeDisplay(a.start);
+        const endTime = formatTimeDisplay(a.end);
+        const timeRange = (startTime && endTime) ? `${startTime} - ${endTime}` : '';
+        
+        div.innerHTML = `
+            <span>
+                ${timeRange ? `<span style="color:#34d399;font-family:monospace;font-weight:600;">${timeRange}</span> ` : ''}
+                ${a.content || ''}
+                ${a.location ? ` (@${a.location})` : ''}
+            </span>
+        `;
+        actBox.appendChild(div);
+    });
+} else {
+    actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
+}
 
             // ---- 功課 (homework) ----
             const hwBox = document.getElementById("homework-container");
@@ -604,27 +613,31 @@
                 dlBox.innerHTML = `<div class="empty-state">今日無截止需求</div>`;
             }
 
-            // ---- 會議 (meetings) ----
-            const mBox = document.getElementById("meetings-container");
-            mBox.innerHTML = "";
-            if (data.meetings && data.meetings.length > 0 && data.meetings[0].content) {
-                data.meetings.forEach(m => {
-                    const div = document.createElement("div");
-                    div.className = "list-item mtg";
-                    div.innerHTML = `
-                        <span>${m.content || ''} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
-                        <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start || ''}-${m.end || ''}</span>
-                    `;
-                    mBox.appendChild(div);
-                });
-            } else {
-                mBox.innerHTML = `<div class="empty-state" style="padding:3px 0;">今日無會議</div>`;
-            }
-
-        } catch (err) {
-            console.error("Google Sheets 同步失敗:", err);
-        }
-    }
+          // ---- 會議 (meetings) ----
+const mBox = document.getElementById("meetings-container");
+mBox.innerHTML = "";
+if (data.meetings && data.meetings.length > 0 && data.meetings[0].content) {
+    data.meetings.forEach(m => {
+        const div = document.createElement("div");
+        div.className = "list-item mtg";
+        
+        // 將時間轉為 HH:MM 格式
+        const startTime = formatTimeDisplay(m.start);
+        const endTime = formatTimeDisplay(m.end);
+        const timeRange = (startTime && endTime) ? `${startTime} - ${endTime}` : '';
+        
+        div.innerHTML = `
+            <span>
+                ${timeRange ? `<span style="color:#a78bfa;font-family:monospace;font-weight:600;">${timeRange}</span> ` : ''}
+                ${m.content || ''}
+                ${m.location ? ` (${m.location})` : ''}
+            </span>
+        `;
+        mBox.appendChild(div);
+    });
+} else {
+    mBox.innerHTML = `<div class="empty-state" style="padding:3px 0;">今日無會議</div>`;
+}
 
     // ================================================================
     //  重新整理
