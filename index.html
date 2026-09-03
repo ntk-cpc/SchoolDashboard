@@ -500,11 +500,12 @@
             document.getElementById("school-mode").textContent = data.mode || "全日";
             document.getElementById("school-note").textContent = data.note || "無特別活動";
 
-            // ---- 課表 ----
+            // ---- 課表（改為用 timetable） ----
             const tbody = document.getElementById("schedule-body");
             tbody.innerHTML = "";
             
-            const scheduleData = data.schedule || [];
+            // ✅ 改咗呢度：由 schedule 改為 timetable
+            const scheduleData = data.timetable || [];
             
             if (scheduleData.length > 0) {
                 const now = new Date();
@@ -551,7 +552,8 @@
                     const div = document.createElement("div");
                     div.className = "list-item activity";
                     div.innerHTML = `
-                        <span>${a.start || ''}-${a.end || ''} ${a.content} ${a.location ? '(@' + a.location + ')' : ''}</span>
+                        <span>${a.content} ${a.location ? '(@' + a.location + ')' : ''}</span>
+                        <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
                     `;
                     actBox.appendChild(div);
                 });
