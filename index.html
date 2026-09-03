@@ -5,117 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>教師儀表板</title>
   <style>
-    :root {
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --text-primary: #c9d1d9;
-      --text-secondary: #8b949e;
-      --accent-blue: #58a6ff;
-      --accent-cyan: #39c5bb;
-      --accent-purple: #bc8cff;
-      --accent-pink: #f778ba;
-      --accent-yellow: #d29922;
-      --tag-bg: #21262d;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: var(--bg-color);
-      color: var(--text-primary);
-      padding: 12px;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 16px;
+      min-height: 100vh;
     }
-
-    /* 頂部 Header */
-    .header {
+    
+    .top-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      padding: 0 4px;
+      margin-bottom: 16px;
+    }
+    .top-header h1 { font-size: 1.25rem; font-weight: 600; }
+    .top-header .time-text { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
+    .top-tags { display: flex; gap: 8px; }
+    .top-tag {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .top-tag span { color: #fbbf24; font-weight: 600; margin-left: 4px; }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      gap: 16px;
+      height: calc(100vh - 80px);
     }
 
-    .header-left {
+    .card-panel {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
-    .title {
+    .panel-title {
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #334155;
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-
-    .time-stamp {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    .header-right {
-      display: flex;
       gap: 8px;
     }
 
-    .status-badge {
-      background-color: var(--tag-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .badge-val {
-      color: var(--accent-yellow);
-      font-weight: 600;
-    }
-
-    /* 主體 Layout */
-    .dashboard-container {
-      display: grid;
-      grid-template-columns: 320px 1fr 340px;
-      gap: 12px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .card-header {
-      padding: 10px 12px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .card-body {
-      padding: 12px;
+    .panel-body {
       flex: 1;
       overflow-y: auto;
       display: flex;
@@ -123,105 +69,63 @@
       gap: 16px;
     }
 
-    /* 左欄：課表表格 */
-    .schedule-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }
+    /* 課表專用 */
+    .schedule-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .schedule-table th { text-align: left; padding: 6px; color: #94a3b8; border-bottom: 1px solid #334155; }
+    .schedule-table td { padding: 8px 6px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); }
+    .schedule-table td.time { color: #38bdf8; }
 
-    .schedule-table th {
-      color: var(--text-secondary);
-      font-weight: 400;
-      text-align: left;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--card-border);
-    }
+    /* 中間 4 項事務 */
+    .section-group { display: flex; flex-direction: column; gap: 8px; }
+    .section-label { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    
+    .label-hw { color: #38bdf8; }
+    .label-dl { color: #fbbf24; }
+    .label-act { color: #38bdf8; }
+    .label-mtg { color: #f472b6; }
 
-    .schedule-table td {
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(48, 54, 61, 0.4);
-    }
-
-    .schedule-table td.time-col {
-      color: var(--accent-cyan);
-    }
-
-    /* 中欄：4個事務區塊 */
-    .task-section-title {
+    .data-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 4px solid #334155;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 12px;
       font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .task-section-title.hw { color: var(--accent-blue); }
-    .task-section-title.dl { color: var(--accent-yellow); }
-    .task-section-title.act { color: var(--accent-cyan); }
-    .task-section-title.mtg { color: var(--accent-pink); }
-
-    .task-box {
-      background: rgba(255, 255, 255, 0.02);
-      border-left: 3px solid var(--card-border);
-      border-radius: 0 4px 4px 0;
-      padding: 8px 10px;
-      margin-bottom: 6px;
-      font-size: 0.82rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .task-box.hw-border { border-left-color: var(--accent-blue); }
-    .task-box.dl-border { border-left-color: var(--accent-yellow); }
-    .task-box.act-border { border-left-color: var(--accent-cyan); }
-    .task-box.mtg-border { border-left-color: var(--accent-pink); }
+    .data-box.hw { border-left-color: #38bdf8; }
+    .data-box.dl { border-left-color: #fbbf24; }
+    .data-box.act { border-left-color: #38bdf8; }
+    .data-box.mtg { border-left-color: #f472b6; }
 
-    .task-text {
-      color: var(--text-primary);
-    }
+    .data-title { font-weight: 500; color: #f8fafc; }
+    .data-sub { font-size: 0.8rem; color: #38bdf8; }
+    .data-empty { font-size: 0.85rem; color: #64748b; font-style: italic; padding: 4px 0; }
 
-    .task-subtext {
-      color: var(--text-secondary);
-      font-size: 0.75rem;
-    }
-
-    .empty-text {
-      font-size: 0.78rem;
-      color: var(--text-secondary);
-      padding: 4px 0;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    iframe { width: 100%; height: 100%; border: none; border-radius: 6px; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="header-left">
-      <div class="title">🏫 教師儀表板</div>
-      <div class="time-stamp" id="clock">--/--/---- --:--:--</div>
+  <div class="top-header">
+    <div>
+      <h1>🏫 教師儀表板</h1>
+      <div class="time-text" id="live-time">03/09/2026 15:50:54</div>
     </div>
-    <div class="header-right">
-      <div class="status-badge">Cycle: <span class="badge-val" id="cycle-val">-</span></div>
-      <div class="status-badge">模式: <span class="badge-val" id="mode-val">-</span></div>
-      <div class="status-badge">活動: <span class="badge-val" id="note-val">-</span></div>
+    <div class="top-tags">
+      <div class="top-tag">Cycle: <span id="tag-cycle">-</span></div>
+      <div class="top-tag">模式: <span id="tag-mode">-</span></div>
+      <div class="top-tag">活動: <span id="tag-note">-</span></div>
     </div>
   </div>
 
-  <div class="dashboard-container">
-    <!-- 左：今日課表 -->
-    <div class="card">
-      <div class="card-header">
-        <span>📅 今日課表</span>
-      </div>
-      <div class="card-body" style="padding: 10px;">
+  <div class="main-layout">
+    <!-- 左欄：今日課表 -->
+    <div class="card-panel">
+      <div class="panel-title">📅 今日課表</div>
+      <div class="panel-body">
         <table class="schedule-table">
           <thead>
             <tr>
@@ -230,157 +134,152 @@
               <th width="50%">課堂資訊</th>
             </tr>
           </thead>
-          <tbody id="schedule-list">
-            <tr><td colspan="3" class="empty-text">資料載入中...</td></tr>
+          <tbody id="schedule-rows">
+            <tr><td colspan="3" class="data-empty">資料載入中...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- 中：今日事務 -->
-    <div class="card">
-      <div class="card-header">
-        <span>📋 今日事務</span>
-      </div>
-      <div class="card-body">
+    <!-- 中欄：今日事務 -->
+    <div class="card-panel">
+      <div class="panel-title">📋 今日事務</div>
+      <div class="panel-body">
         
-        <!-- 功課 -->
-        <div>
-          <div class="task-section-title hw">📚 功課</div>
-          <div id="homework-container"></div>
+        <!-- 1. 功課 -->
+        <div class="section-group">
+          <div class="section-label label-hw">📚 功課</div>
+          <div id="hw-list"></div>
         </div>
 
-        <!-- 文件 Deadline -->
-        <div>
-          <div class="task-section-title dl">⏳ 文件 Deadline</div>
-          <div id="deadline-container"></div>
+        <!-- 2. 文件 Deadline -->
+        <div class="section-group">
+          <div class="section-label label-dl">⏳ 文件 Deadline</div>
+          <div id="dl-list"></div>
         </div>
 
-        <!-- 學生活動/課後安排 -->
-        <div>
-          <div class="task-section-title act">🎨 學生活動 / 課後安排</div>
-          <div id="activity-container"></div>
+        <!-- 3. 學生活動/課後安排 -->
+        <div class="section-group">
+          <div class="section-label label-act">🎨 學生活動/課後安排</div>
+          <div id="act-list"></div>
         </div>
 
-        <!-- 今日會議 -->
-        <div>
-          <div class="task-section-title mtg">📌 今日會議</div>
-          <div id="meeting-container"></div>
+        <!-- 4. 今日會議 -->
+        <div class="section-group">
+          <div class="section-label label-mtg">📌 今日會議</div>
+          <div id="mtg-list"></div>
         </div>
 
       </div>
     </div>
 
-    <!-- 右：屋苑穿梭巴士 (穿梭巴士連結修正) -->
-    <div class="card">
-      <div class="card-header">
-        <span>🚌 屋苑穿梭巴士</span>
-      </div>
-      <div class="card-body" style="padding: 0;">
-        <iframe src="https://ntk-cpc.github.io/SchoolDashboard/" title="Bus Schedule"></iframe>
+    <!-- 右欄：屋苑穿梭巴士 -->
+    <div class="card-panel">
+      <div class="panel-title">🚌 屋苑穿梭巴士</div>
+      <div class="panel-body" style="padding: 0;">
+        <iframe src="https://ntk-cpc.github.io/shuttle-bus-widget/" title="Shuttle Bus"></iframe>
       </div>
     </div>
   </div>
 
   <script>
+    // 綁定最新的 Google Apps Script API 網址
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzaSYbTxYTftHNPO_11NnE49uTyf1tlJ1iquI7SaRhqdgjMzVYZc6SLYbL5TdBWK5x3/exec";
 
-    // 時鐘更新
-    function startClock() {
-      const update = () => {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleString('zh-HK', {
-          year: 'numeric', month: '2-digit', day: '2-digit',
-          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-        });
-      };
-      update();
-      setInterval(update, 1000);
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('live-time').innerText = now.toLocaleString('zh-HK', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+      });
     }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-    async function loadDashboard() {
+    async function loadData() {
       try {
-        const res = await fetch(GAS_URL);
-        const data = await res.json();
+        const response = await fetch(GAS_URL);
+        const data = await response.json();
 
         if (data.error) {
           console.error("GAS 錯誤:", data.error);
           return;
         }
 
-        // 頂部資訊
-        document.getElementById('cycle-val').innerText = data.cycleDay || '-';
-        document.getElementById('mode-val').innerText = data.mode || '-';
-        document.getElementById('note-val').innerText = data.note || '無特別活動';
+        // 1. 頂部狀態列
+        document.getElementById('tag-cycle').innerText = data.cycleDay || '-';
+        document.getElementById('tag-mode').innerText = data.mode || '-';
+        document.getElementById('tag-note').innerText = data.note || '無特別活動';
 
-        // 渲染課表
-        const schedBody = document.getElementById('schedule-list');
+        // 2. 左側：今日課表
+        const schedTbody = document.getElementById('schedule-rows');
         if (data.schedule && data.schedule.length > 0) {
-          schedBody.innerHTML = data.schedule.map(s => `
+          schedTbody.innerHTML = data.schedule.map(item => `
             <tr>
-              <td><strong>${s.period}</strong></td>
-              <td class="time-col">${s.time}</td>
-              <td>${s.info}</td>
+              <td><strong>${item.period}</strong></td>
+              <td class="time">${item.time}</td>
+              <td>${item.info}</td>
             </tr>
           `).join('');
         } else {
-          schedBody.innerHTML = `<tr><td colspan="3" class="empty-text">今日無課表資料</td></tr>`;
+          schedTbody.innerHTML = `<tr><td colspan="3" class="data-empty">今日無課表資料</td></tr>`;
         }
 
-        // 1. 功課
-        renderSection('homework-container', data.homework, item => `
-          <div class="task-box hw-border">
-            <span class="task-text">${item.className ? `[${item.className}] ` : ''}${item.title}</span>
-            <span class="task-subtext">${item.type || ''}</span>
+        // 3. 中間 1：功課
+        renderSection('hw-list', data.homework, item => `
+          <div class="data-box hw">
+            <span class="data-title">${item.className ? `[${item.className}] ` : ''}${item.title}</span>
+            <span class="data-sub">${item.type || ''}</span>
           </div>
         `, '今日無功課紀錄');
 
-        // 2. 文件 Deadline
-        renderSection('deadline-container', data.deadlines, item => `
-          <div class="task-box dl-border">
-            <span class="task-text">${item.item}</span>
-            <span class="task-subtext">${item.dept ? `${item.dept} ` : ''}${item.status ? `(${item.status})` : ''}</span>
+        // 4. 中間 2：文件 Deadline
+        renderSection('dl-list', data.deadlines, item => `
+          <div class="data-box dl">
+            <span class="data-title">${item.item}</span>
+            <span class="data-sub">${item.dept ? `${item.dept} ` : ''}${item.status ? `(${item.status})` : ''}</span>
           </div>
         `, '今日無文件截止需求');
 
-        // 3. 學生活動
-        renderSection('activity-container', data.activities, item => {
-          const time = [item.start, item.end].filter(Boolean).join(' - ');
+        // 5. 中間 3：學生活動 / 課後安排 (修正解析欄位)
+        renderSection('act-list', data.activities, item => {
+          const timeRange = [item.start, item.end].filter(Boolean).join(' - ');
+          const loc = item.location ? ` (${item.location})` : '';
           return `
-            <div class="task-box act-border">
-              <span class="task-text">${item.title} ${item.location ? `<span class="task-subtext">(${item.location})</span>` : ''}</span>
-              <span class="task-subtext">${time}</span>
+            <div class="data-box act">
+              <span class="data-title">${item.title}${loc}</span>
+              <span class="data-sub">${timeRange}</span>
             </div>
           `;
         }, '今日無學生活動');
 
-        // 4. 今日會議
-        renderSection('meeting-container', data.meetings, item => {
-          const time = [item.start, item.end].filter(Boolean).join(' - ');
+        // 6. 中間 4：今日會議 (修正解析欄位)
+        renderSection('mtg-list', data.meetings, item => {
+          const timeRange = [item.start, item.end].filter(Boolean).join(' - ');
+          const remark = item.remark ? ` (${item.remark})` : '';
           return `
-            <div class="task-box mtg-border">
-              <span class="task-text">${item.title} ${item.remark ? `<span class="task-subtext">(${item.remark})</span>` : ''}</span>
-              <span class="task-subtext">${time}</span>
+            <div class="data-box mtg">
+              <span class="data-title">${item.title}${remark}</span>
+              <span class="data-sub">${timeRange}</span>
             </div>
           `;
         }, '今日無突發會議');
 
       } catch (err) {
-        console.error("載入資料失敗:", err);
+        console.error("讀取資料失敗:", err);
       }
     }
 
-    function renderSection(elementId, items, htmlFn, emptyMsg) {
-      const el = document.getElementById(elementId);
-      if (items && items.length > 0) {
-        el.innerHTML = items.map(htmlFn).join('');
+    function renderSection(containerId, list, templateFunc, emptyMessage) {
+      const container = document.getElementById(containerId);
+      if (list && list.length > 0) {
+        container.innerHTML = list.map(templateFunc).join('');
       } else {
-        el.innerHTML = `<div class="empty-text">${emptyMsg}</div>`;
+        container.innerHTML = `<div class="data-empty">${emptyMessage}</div>`;
       }
     }
 
-    startClock();
-    loadDashboard();
+    loadData();
   </script>
 </body>
 </html>
