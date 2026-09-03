@@ -544,21 +544,45 @@
             }
 
             // ---- 學生活動 ----
-            const actBox = document.getElementById("activity-container");
-            actBox.innerHTML = "";
-            if (data.activities && data.activities.length > 0) {
-                data.activities.forEach(a => {
-                    const div = document.createElement("div");
-                    div.className = "list-item activity";
-                    div.innerHTML = `
-                        <span>${a.date || ''} ${a.title} ${a.location ? '(@' + a.location + ')' : ''}</span>
-                        <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
-                    `;
-                    actBox.appendChild(div);
-                });
-            } else {
-                actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
+           // ---- 學生活動 ----
+const actContainer = document.getElementById("activity-container");
+if (actContainer) {
+    // 過濾掉空的或無效的活動
+    const validActivities = (data.activities || []).filter(item => {
+        return item.title || (item.start && !item.start.includes("今日無"));
+    });
+    
+    if (validActivities.length > 0) {
+        actContainer.innerHTML = validActivities.map(item => {
+            // 組合時間顯示
+            let timeStr = "";
+            if (item.start && item.end) {
+                timeStr = `${item.start} - ${item.end}`;
+            } else if (item.start) {
+                timeStr = item.start;
+            } else if (item.end) {
+                timeStr = item.end;
             }
+            
+            // 組合地點顯示
+            const locationStr = item.location ? ` @${item.location}` : "";
+            
+            return `
+                <div class="list-item activity">
+                    <span>${item.title}${locationStr}</span>
+                    ${timeStr ? `<span style="color:#34d399;font-family:monospace;font-size:13px;">${timeStr}</span>` : ''}
+                </div>
+            `;
+        }).join('');
+        
+        // 如果沒有內容，顯示空狀態
+        if (!actContainer.innerHTML.trim()) {
+            actContainer.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
+        }
+    } else {
+        actContainer.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
+    }
+}
 
             // ---- 功課 ----
             const hwBox = document.getElementById("homework-container");
