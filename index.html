@@ -153,7 +153,7 @@
             text-align: left;
             padding: 6px 8px;
             font-size: 13px;
-            text-transform: uppercase;
+            text-transform: percase;
             color: #4f6a8a;
             border-bottom: 2px solid rgba(255, 255, 255, 0.05);
             font-weight: 600;
@@ -454,7 +454,7 @@
             </div>
             <div class="shuttle-wrapper">
                 <iframe src="https://eta-app.socif.co/sunbus?site=gds&lang=zh"
-                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
+                        sandbox="allow-scripts allow-same-origin allow-pops allow-forms">
                 </iframe>
             </div>
         </div>
@@ -472,12 +472,34 @@
     // ================================================================
     //  ⚠️ 請將下面條 URL 換成你新部署嘅 Google Apps Script URL
     // ================================================================
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw5q_NrFlupQIpnJetoMERzIkQ4wrlJc-xSniTQ8-9GKQqnWj9ReYHOwDVyPsIiilrD/exec";
+    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw5q_NrFlQIpnJetoMERzIkQ4wrlJc-xSniTQ8-9GKQqnWj9ReYHOwDVyPsIiilrD/exec";
 
     // ================================================================
     //  時鐘
     // ================================================================
-    function updateClock() {
+    function updateClock() // ================================================================
+//  將 Sat Dec 30 1899 13:00:00 GMT+0800 轉為 HH:MM
+// ================================================================
+function formatTimeDisplay(timeStr) {
+    if (!timeStr) return '';
+    
+    // 如果已經是 HH:MM 格式，直接回傳
+    if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+    
+    try {
+        // 嘗試用 Date 解析
+        const date = new Date(timeStr);
+        if (!isNaN(date)) {
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+    } catch (e) {
+        // 忽略
+    }
+    
+    return timeStr; // 如果無法轉換，回傳原始值
+}{
         const now = new Date();
         document.getElementById("system-time").textContent = now.toLocaleString("zh-HK", {
             year: 'numeric', month: '2-digit', day: '2-digit',
