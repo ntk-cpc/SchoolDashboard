@@ -470,9 +470,9 @@
 
 <script>
     // ================================================================
-    //  ⚠️ 將下面條 URL 換成你嘅 Google Apps Script URL
+    // ✅ 已更新為最新部署嘅 Google Apps Script URL
     // ================================================================
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbzGlMyUt-NtIzGpVffQqLSpb3g8CKimJ49oqUNy1qgOqul_bA1kiMyyytMJ4AealD_h/exec";
+    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbzmJ5aVnxv5Qx_o-HwjWpfJPzx9v0JmEmUGX5lqwbdB4RuJHvPq0EQPik9jxbuMItru/exec";
 
     function updateClock() {
         const now = new Date();
@@ -489,24 +489,31 @@
 
     async function fetchDashboardData() {
         try {
-            const response = await fetch(GOOGLE_API_URL, { redirect: "follow" });
+            // 加入時間戳記避免瀏覽器 快取 (Cache) 問題
+            const cacheBuster = "?t=" + new Date().getTime();
+            const response = await fetch(GOOGLE_API_URL + cacheBuster, { redirect: "follow" });
             const data = await response.json();
 
             console.log("📊 接收到嘅資料:", data);
 
-            document.getElementById("current-date-display").textContent =
-                data.date + " (" + data.weekday + ")";
+            // 更新頂部資訊
+            document.getElementById("current-date-display").textContent = data.date ? (data.date + (data.weekday ? " (" + data.weekday + ")" : "")) : "--";
             document.getElementById("cycle-day").textContent = data.cycleDay || "--";
             document.getElementById("school-mode").textContent = data.mode || "全日";
             document.getElementById("school-note").textContent = data.note || "無特別活動";
 
-            // ---- 課表（改為用 timetable） ----
+            // ---- 課表處理 ----
             const tbody = document.getElementById("schedule-body");
             tbody.innerHTML = "";
-            
-            // ✅ 改咗呢度：由 schedule 改為 timetable
-            const scheduleData = data.timetable || [];
-            
+
+            const rawSchedule = data.timetable || data.schedule || [];
+
+            // ⚠️ 自動過濾試算表標頭列（例如：period 為 "課節" 或 "節" 的資料）
+            const scheduleData = rawSchedule.filter(item => {
+                const p = String(item.period).trim();
+                return p !== "課節" && p !== "節" && item.time !== "時間";
+            });
+
             if (scheduleData.length > 0) {
                 const now = new Date();
                 const currentMin = now.getHours() * 60 + now.getMinutes();
@@ -516,17 +523,21 @@
                     let extraClass = "";
                     let isNow = false;
 
-                    if (item.info && item.info.includes("小息")) extraClass = "break";
-                    else if (item.info && (item.info.includes("午膳") || item.info.includes("午睡"))) extraClass = "lunch";
+                    const infoText = String(item.info || '');
+                    if (infoText.includes("小息")) extraClass = "break";
+                    else if (infoText.includes("午膳") || infoText.includes("午睡")) extraClass = "lunch";
 
-                    if (item.time && item.time.includes('-')) {
-                        const [start, end] = item.time.split('-');
-                        const [sh, sm] = start.split(':').map(Number);
-                        const [eh, em] = end.split(':').map(Number);
-                        if (!isNaN(sh) && !isNaN(sm) && !isNaN(eh) && !isNaN(em)) {
-                            const startMin = sh * 60 + sm;
-                            const endMin = eh * 60 + em;
-                            if (currentMin >= startMin && currentMin < endMin) isNow = true;
+                    const timeStr = String(item.time || '');
+                    if (timeStr.includes('-')) {
+                        const [start, end] = timeStr.split('-');
+                        if (start && end) {
+                            const [sh, sm] = start.split(':').map(Number);
+                            const [eh, em] = end.split(':').map(Number);
+                            if (!isNaN(sh) && !isNaN(sm) && !isNaN(eh) && !isNaN(em)) {
+                                const startMin = sh * 60 + sm;
+                                const endMin = eh * 60 + em;
+                                if (currentMin >= startMin && currentMin < endMin) isNow = true;
+                            }
                         }
                     }
 
@@ -534,9 +545,9 @@
                     if (extraClass) tr.className = extraClass.trim();
 
                     tr.innerHTML = `
-                        <td class="period">${item.period || ''}</td>
-                        <td class="time-col">${item.time || ''}</td>
-                        <td>${item.info || ''}</td>
+                        <td class="period">${item.period ?? ''}</td>
+                        <td class="time-col">${item.time ?? ''}</td>
+                        <td>${item.info ?? ''}</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -552,7 +563,7 @@
                     const div = document.createElement("div");
                     div.className = "list-item activity";
                     div.innerHTML = `
-                        <span>${a.content} ${a.location ? '(@' + a.location + ')' : ''}</span>
+                        <span>${a.content || ''} ${a.location ? '(@' + a.location + ')' : ''}</span>
                         <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
                     `;
                     actBox.appendChild(div);
@@ -569,7 +580,7 @@
                     const div = document.createElement("div");
                     div.className = "list-item hw";
                     div.innerHTML = `
-                        <span><span style="color:#f472b6;font-weight:600;">[${h.category}]</span> ${h.class} - ${h.item}</span>
+                        <span><span style="color:#f472b6;font-weight:600;">[${h.category || ''}]</span> ${h.class || ''} - ${h.item || ''}</span>
                     `;
                     hwBox.appendChild(div);
                 });
@@ -585,8 +596,8 @@
                     const div = document.createElement("div");
                     div.className = "list-item dl";
                     div.innerHTML = `
-                        <span>${f.item} <span style="color:#4f6a8a;font-size:12px;">(${f.department})</span></span>
-                        <span style="color:#fbbf24;font-weight:700;">${f.status}</span>
+                        <span>${f.item || ''} <span style="color:#4f6a8a;font-size:12px;">(${f.department || ''})</span></span>
+                        <span style="color:#fbbf24;font-weight:700;">${f.status || ''}</span>
                     `;
                     dlBox.appendChild(div);
                 });
@@ -602,7 +613,7 @@
                     const div = document.createElement("div");
                     div.className = "list-item mtg";
                     div.innerHTML = `
-                        <span>${m.content} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
+                        <span>${m.content || ''} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
                         <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start || ''}-${m.end || ''}</span>
                     `;
                     mBox.appendChild(div);
