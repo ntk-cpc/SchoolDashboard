@@ -469,9 +469,6 @@
 </div>
 
 <script>
-    // ================================================================
-    // ✅ 已更新為最新部署嘅 Google Apps Script URL
-    // ================================================================
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbzmJ5aVnxv5Qx_o-HwjWpfJPzx9v0JmEmUGX5lqwbdB4RuJHvPq0EQPik9jxbuMItru/exec";
 
     function updateClock() {
@@ -489,7 +486,6 @@
 
     async function fetchDashboardData() {
         try {
-            // 加入時間戳記避免瀏覽器 快取 (Cache) 問題
             const cacheBuster = "?t=" + new Date().getTime();
             const response = await fetch(GOOGLE_API_URL + cacheBuster, { redirect: "follow" });
             const data = await response.json();
@@ -508,7 +504,6 @@
 
             const rawSchedule = data.timetable || data.schedule || [];
 
-            // ⚠️ 自動過濾試算表標頭列（例如：period 為 "課節" 或 "節" 的資料）
             const scheduleData = rawSchedule.filter(item => {
                 const p = String(item.period).trim();
                 return p !== "課節" && p !== "節" && item.time !== "時間";
@@ -555,16 +550,18 @@
                 tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
             }
 
-            // ---- 學生活動 ----
+            // ---- 學生活動（已將時間移至最前） ----
             const actBox = document.getElementById("activity-container");
             actBox.innerHTML = "";
             if (data.activities && data.activities.length > 0) {
                 data.activities.forEach(a => {
                     const div = document.createElement("div");
                     div.className = "list-item activity";
+                    const timeRange = (a.start || a.end) ? `${a.start || ''}-${a.end || ''} ` : '';
                     div.innerHTML = `
-                        <span>${a.content || ''} ${a.location ? '(@' + a.location + ')' : ''}</span>
-                        <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
+                        <span>
+                            <span style="color:#34d399;font-family:monospace;font-size:14px;font-weight:600;margin-right:6px;">${timeRange}</span>${a.content || ''} ${a.location ? '(@' + a.location + ')' : ''}
+                        </span>
                     `;
                     actBox.appendChild(div);
                 });
@@ -605,16 +602,18 @@
                 dlBox.innerHTML = `<div class="empty-state">今日無截止需求</div>`;
             }
 
-            // ---- 會議 ----
+            // ---- 會議（已將時間移至最前） ----
             const mBox = document.getElementById("meetings-container");
             mBox.innerHTML = "";
             if (data.meetings && data.meetings.length > 0) {
                 data.meetings.forEach(m => {
                     const div = document.createElement("div");
                     div.className = "list-item mtg";
+                    const timeRange = (m.start || m.end) ? `${m.start || ''}-${m.end || ''} ` : '';
                     div.innerHTML = `
-                        <span>${m.content || ''} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
-                        <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start || ''}-${m.end || ''}</span>
+                        <span>
+                            <span style="color:#a78bfa;font-family:monospace;font-size:14px;font-weight:600;margin-right:6px;">${timeRange}</span>${m.content || ''} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span>
+                        </span>
                     `;
                     mBox.appendChild(div);
                 });
