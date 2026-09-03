@@ -1,285 +1,646 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-HK">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>教師儀表板</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: #0f172a;
-      color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      padding: 16px;
-      min-height: 100vh;
-    }
-    
-    .top-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .top-header h1 { font-size: 1.25rem; font-weight: 600; }
-    .top-header .time-text { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
-    .top-tags { display: flex; gap: 8px; }
-    .top-tag {
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 4px 12px;
-      border-radius: 16px;
-      font-size: 0.8rem;
-      color: #94a3b8;
-    }
-    .top-tag span { color: #fbbf24; font-weight: 600; margin-left: 4px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🏫 教師儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .main-layout {
-      display: grid;
-      grid-template-columns: 320px 1fr 380px;
-      gap: 16px;
-      height: calc(100vh - 80px);
-    }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
 
-    .card-panel {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+        body {
+            background: #0a0e17;
+            font-family: -apple-system, 'Helvetica Neue', 'PingFang HK', 'Segoe UI', sans-serif;
+            color: #eef3f9;
+            padding: 10px 14px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
 
-    .panel-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #334155;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        .app-container {
+            max-width: 1440px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .panel-body {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        /* ===== 卡片 ===== */
+        .card {
+            background: linear-gradient(145deg, #141c2a, #0e1520);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-    /* 課表專用 */
-    .schedule-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    .schedule-table th { text-align: left; padding: 6px; color: #94a3b8; border-bottom: 1px solid #334155; }
-    .schedule-table td { padding: 8px 6px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); }
-    .schedule-table td.time { color: #38bdf8; }
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+            color: #b0c8e0;
+        }
 
-    /* 中間 4 項事務 */
-    .section-group { display: flex; flex-direction: column; gap: 8px; }
-    .section-label { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-    
-    .label-hw { color: #38bdf8; }
-    .label-dl { color: #fbbf24; }
-    .label-act { color: #38bdf8; }
-    .label-mtg { color: #f472b6; }
+        .card-title .badge {
+            font-size: 13px;
+            font-weight: 400;
+            color: #4f6a8a;
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 2px 14px;
+            border-radius: 30px;
+        }
 
-    .data-box {
-      background: rgba(15, 23, 42, 0.6);
-      border-left: 4px solid #334155;
-      border-radius: 0 6px 6px 0;
-      padding: 10px 12px;
-      font-size: 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        /* ===== 頂部 ===== */
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 8px;
+            flex-shrink: 0;
+        }
 
-    .data-box.hw { border-left-color: #38bdf8; }
-    .data-box.dl { border-left-color: #fbbf24; }
-    .data-box.act { border-left-color: #38bdf8; }
-    .data-box.mtg { border-left-color: #f472b6; }
+        .top-bar h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #5b9cff;
+        }
 
-    .data-title { font-weight: 500; color: #f8fafc; }
-    .data-sub { font-size: 0.8rem; color: #38bdf8; }
-    .data-empty { font-size: 0.85rem; color: #64748b; font-style: italic; padding: 4px 0; }
+        .top-bar .time {
+            font-size: 15px;
+            color: #5b7a9c;
+        }
 
-    iframe { width: 100%; height: 100%; border: none; border-radius: 6px; }
-  </style>
+        .top-stats {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .top-stats .stat {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 16px;
+            border-radius: 24px;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .top-stats .stat .label {
+            color: #5b7a9c;
+            font-size: 10px;
+            display: block;
+        }
+
+        .top-stats .stat .value {
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .stat-amber .value { color: #f5b342; }
+        .stat-emerald .value { color: #4fcf8a; }
+        .stat-sky .value { color: #5bb8ff; }
+
+        /* ===== 主網格：3 欄 ===== */
+        .main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 5fr 4fr 3fr;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        /* ===== 課表 ===== */
+        .schedule-scroll {
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .schedule-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .schedule-scroll::-webkit-scrollbar-thumb {
+            background: #2a3f5a;
+            border-radius: 10px;
+        }
+
+        .sch-table {
+            width: 100%;
+            font-size: 18px;
+            border-collapse: collapse;
+        }
+
+        .sch-table thead th {
+            text-align: left;
+            padding: 6px 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #4f6a8a;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        .sch-table tbody td {
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: #dce8f5;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .sch-table tbody tr.now td {
+            background: rgba(45, 140, 255, 0.10);
+            border-left: 4px solid #3b8cff;
+        }
+
+        .sch-table tbody tr.now td:first-child {
+            padding-left: 4px;
+        }
+
+        .sch-table tbody tr.break td {
+            color: #a08a5a;
+        }
+        .sch-table tbody tr.lunch td {
+            color: #5fc98a;
+        }
+
+        .sch-table .period {
+            font-weight: 600;
+            color: #5b7a9c;
+            font-size: 15px;
+            width: 38px;
+        }
+        .sch-table .time-col {
+            font-family: monospace;
+            font-size: 14px;
+            color: #4f8fc0;
+            width: 110px;
+        }
+
+        /* ===== 穿梭巴士 ===== */
+        .shuttle-wrapper {
+            flex: 1;
+            min-height: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0d1420;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+        }
+
+        .shuttle-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .shuttle-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: rgba(10, 14, 23, 0.08);
+            mix-blend-mode: multiply;
+        }
+
+        /* ===== 事務 ===== */
+        .item-list {
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .item-list::-webkit-scrollbar {
+            width: 3px;
+        }
+        .item-list::-webkit-scrollbar-thumb {
+            background: #2a3f5a;
+            border-radius: 10px;
+        }
+
+        .list-item {
+            padding: 5px 8px;
+            border-radius: 6px;
+            margin-bottom: 3px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid #4f6a8a;
+            line-height: 1.3;
+        }
+
+        .list-item.hw { border-left-color: #f472b6; }
+        .list-item.dl { border-left-color: #fbbf24; }
+        .list-item.act { border-left-color: #38bdf8; }
+        .list-item.mtg { border-left-color: #a78bfa; }
+
+        .empty-state {
+            color: #4f6a8a;
+            font-size: 13px;
+            padding: 4px 0;
+            text-align: center;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            padding: 2px 0;
+        }
+
+        .section-label:first-of-type {
+            padding-top: 0;
+        }
+
+        .tasks-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            gap: 4px;
+        }
+
+        .tasks-area .task-block {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        /* ===== 底部 ===== */
+        .footer-bar {
+            flex-shrink: 0;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #3f5a7a;
+        }
+
+        .footer-bar .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3bc96a;
+            margin-right: 6px;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .footer-bar button {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #5b7a9c;
+            padding: 3px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .footer-bar button:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            body { padding: 6px 8px; }
+            .card { padding: 8px 10px; }
+            .top-bar h1 { font-size: 18px; }
+            .top-bar .time { font-size: 12px; }
+            .top-stats .stat .value { font-size: 14px; }
+            .main-grid { gap: 6px; }
+            .sch-table { font-size: 15px; }
+            .sch-table tbody td { font-size: 15px; padding: 4px 6px; }
+            .sch-table .period { font-size: 12px; width: 30px; }
+            .sch-table .time-col { font-size: 11px; width: 80px; }
+            .card-title { font-size: 15px; }
+            .list-item { font-size: 12px; padding: 3px 6px; }
+            .empty-state { font-size: 12px; }
+            .section-label { font-size: 12px; }
+            .footer-bar { font-size: 11px; }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            .card { min-height: 140px; }
+            .sch-table tbody td { font-size: 14px; }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="top-header">
-    <div>
-      <h1>🏫 教師儀表板</h1>
-      <div class="time-text" id="live-time">03/09/2026 15:50:54</div>
-    </div>
-    <div class="top-tags">
-      <div class="top-tag">Cycle: <span id="tag-cycle">-</span></div>
-      <div class="top-tag">模式: <span id="tag-mode">-</span></div>
-      <div class="top-tag">活動: <span id="tag-note">-</span></div>
-    </div>
-  </div>
+<div class="app-container">
 
-  <div class="main-layout">
-    <!-- 左欄：今日課表 -->
-    <div class="card-panel">
-      <div class="panel-title">📅 今日課表</div>
-      <div class="panel-body">
-        <table class="schedule-table">
-          <thead>
-            <tr>
-              <th width="15%">節</th>
-              <th width="35%">時間</th>
-              <th width="50%">課堂資訊</th>
-            </tr>
-          </thead>
-          <tbody id="schedule-rows">
-            <tr><td colspan="3" class="data-empty">資料載入中...</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- ====== 頂部 ====== -->
+    <div class="top-bar">
+        <div>
+            <h1>🏫 教師儀表板</h1>
+            <span class="time" id="system-time">載入中...</span>
+        </div>
+        <div class="top-stats">
+            <div class="stat stat-amber">
+                <span class="label">Cycle</span>
+                <span class="value" id="cycle-day">--</span>
+            </div>
+            <div class="stat stat-emerald">
+                <span class="label">模式</span>
+                <span class="value" id="school-mode">--</span>
+            </div>
+            <div class="stat stat-sky">
+                <span class="label">活動</span>
+                <span class="value" id="school-note">--</span>
+            </div>
+        </div>
     </div>
 
-    <!-- 中欄：今日事務 -->
-    <div class="card-panel">
-      <div class="panel-title">📋 今日事務</div>
-      <div class="panel-body">
-        
-        <!-- 1. 功課 -->
-        <div class="section-group">
-          <div class="section-label label-hw">📚 功課</div>
-          <div id="hw-list"></div>
+    <!-- ====== 主網格：3 欄 ====== -->
+    <div class="main-grid">
+
+        <!-- 欄 1：課表 -->
+        <div class="card">
+            <div class="card-title">
+                📅 今日課表
+                <span class="badge" id="current-date-display">--</span>
+            </div>
+            <div class="schedule-scroll">
+                <table class="sch-table">
+                    <thead>
+                        <tr>
+                            <th>節</th>
+                            <th>時間</th>
+                            <th>課堂資訊</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-body">
+                        <tr><td colspan="3" class="text-center text-slate-500 py-3">⏳ 載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- 2. 文件 Deadline -->
-        <div class="section-group">
-          <div class="section-label label-dl">⏳ 文件 Deadline</div>
-          <div id="dl-list"></div>
+        <!-- 欄 2：事務 (擴充為 4 項) -->
+        <div class="card">
+            <div class="card-title">
+                📋 今日事務
+                <span class="badge">總覽</span>
+            </div>
+            <div class="tasks-area">
+                <!-- 1. 功課 -->
+                <div class="task-block">
+                    <div class="section-label" style="color: #f472b6;">📚 功課</div>
+                    <div class="item-list" id="homework-container">
+                        <div class="empty-state">今日無功課紀錄</div>
+                    </div>
+                </div>
+                <!-- 2. 文件 Deadline -->
+                <div class="task-block">
+                    <div class="section-label" style="color: #fbbf24;">⏳ 文件 Deadline</div>
+                    <div class="item-list" id="deadline-container">
+                        <div class="empty-state">今日無截止需求</div>
+                    </div>
+                </div>
+                <!-- 3. 學生活動 / 課後安排 (新加入) -->
+                <div class="task-block">
+                    <div class="section-label" style="color: #38bdf8;">🎨 學生活動/課後安排</div>
+                    <div class="item-list" id="activities-container">
+                        <div class="empty-state">今日無學生活動</div>
+                    </div>
+                </div>
+                <!-- 4. 今日會議 -->
+                <div class="task-block">
+                    <div class="section-label" style="color: #a78bfa;">📌 今日會議</div>
+                    <div class="item-list" id="meetings-container">
+                        <div class="empty-state">今日無會議</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- 3. 學生活動/課後安排 -->
-        <div class="section-group">
-          <div class="section-label label-act">🎨 學生活動/課後安排</div>
-          <div id="act-list"></div>
+        <!-- 欄 3：穿梭巴士 -->
+        <div class="card">
+            <div class="card-title">
+                🚐 屋苑穿梭巴士
+                <span class="badge">即時</span>
+            </div>
+            <div class="shuttle-wrapper">
+                <iframe src="https://eta-app.socif.co/sunbus?site=gds&lang=zh"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
+                </iframe>
+            </div>
         </div>
-
-        <!-- 4. 今日會議 -->
-        <div class="section-group">
-          <div class="section-label label-mtg">📌 今日會議</div>
-          <div id="mtg-list"></div>
-        </div>
-
-      </div>
     </div>
 
-    <!-- 右欄：屋苑穿梭巴士 -->
-    <div class="card-panel">
-      <div class="panel-title">🚌 屋苑穿梭巴士</div>
-      <div class="panel-body" style="padding: 0;">
-        <iframe src="https://ntk-cpc.github.io/shuttle-bus-widget/" title="Shuttle Bus"></iframe>
-      </div>
+    <!-- ====== 底部 ====== -->
+    <div class="footer-bar">
+        <span><span class="dot"></span>系統正常 · 自動更新</span>
+        <span id="footer-clock">--:--:--</span>
+        <button onclick="refreshAll()">⟳ 重新整理</button>
     </div>
-  </div>
 
-  <script>
-    // 綁定最新的 Google Apps Script API 網址
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzaSYbTxYTftHNPO_11NnE49uTyf1tlJ1iquI7SaRhqdgjMzVYZc6SLYbL5TdBWK5x3/exec";
+</div>
+
+<!-- ========================================================== -->
+<script>
+    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw_bgy080wFKf3iybNhFDc0LBHmb0-84-fifMqF2P_50PUncokrrnk9mgr5w3jNawBR/exec";
 
     function updateClock() {
-      const now = new Date();
-      document.getElementById('live-time').innerText = now.toLocaleString('zh-HK', {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-      });
+        const now = new Date();
+        document.getElementById("system-time").textContent = now.toLocaleString("zh-HK", {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+            hour12: false
+        });
+        document.getElementById("footer-clock").textContent =
+            now.toLocaleTimeString("zh-HK", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
-    setInterval(updateClock, 1000);
+
+    async function fetchDashboardData() {
+        try {
+            const response = await fetch(GOOGLE_API_URL, { redirect: "follow" });
+            const data = await response.json();
+
+            document.getElementById("current-date-display").textContent =
+                data.date + " (" + data.weekday + ")";
+            document.getElementById("cycle-day").textContent = data.cycleDay || "--";
+            document.getElementById("school-mode").textContent = data.mode || "全日";
+            document.getElementById("school-note").textContent = data.note || "無特別活動";
+
+            // ---- 課表 ----
+            const tbody = document.getElementById("schedule-body");
+            tbody.innerHTML = "";
+            if (data.schedule && data.schedule.length > 0) {
+                const now = new Date();
+                const currentMin = now.getHours() * 60 + now.getMinutes();
+
+                data.schedule.forEach(item => {
+                    const tr = document.createElement("tr");
+                    let extraClass = "";
+                    let isNow = false;
+
+                    if (item.info && item.info.includes("小息")) extraClass = "break";
+                    else if (item.info && (item.info.includes("午膳") || item.info.includes("午睡"))) extraClass = "lunch";
+
+                    if (item.time && item.time.includes('-')) {
+                        const [start, end] = item.time.split('-');
+                        const [sh, sm] = start.split(':').map(Number);
+                        const [eh, em] = end.split(':').map(Number);
+                        if (!isNaN(sh) && !isNaN(sm) && !isNaN(eh) && !isNaN(em)) {
+                            const startMin = sh * 60 + sm;
+                            const endMin = eh * 60 + em;
+                            if (currentMin >= startMin && currentMin < endMin) isNow = true;
+                        }
+                    }
+
+                    if (isNow) extraClass += " now";
+                    if (extraClass) tr.className = extraClass.trim();
+
+                    tr.innerHTML = `
+                        <td class="period">${item.period || ''}</td>
+                        <td class="time-col">${item.time || ''}</td>
+                        <td>${item.info || ''}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
+            }
+
+            // ---- 1. 功課 ----
+            const hwBox = document.getElementById("homework-container");
+            hwBox.innerHTML = "";
+            if (data.homework && data.homework.length > 0) {
+                data.homework.forEach(h => {
+                    const div = document.createElement("div");
+                    div.className = "list-item hw";
+                    div.innerHTML = `
+                        <span><span style="color:#f472b6;font-weight:600;">[${h.type}]</span> ${h.className} - ${h.title}</span>
+                    `;
+                    hwBox.appendChild(div);
+                });
+            } else {
+                hwBox.innerHTML = `<div class="empty-state">今日無功課紀錄</div>`;
+            }
+
+            // ---- 2. Deadline ----
+            const dlBox = document.getElementById("deadline-container");
+            dlBox.innerHTML = "";
+            if (data.deadlines && data.deadlines.length > 0) {
+                data.deadlines.forEach(d => {
+                    const div = document.createElement("div");
+                    div.className = "list-item dl";
+                    div.innerHTML = `
+                        <span>${d.item} <span style="color:#4f6a8a;font-size:12px;">(${d.dept})</span></span>
+                        <span style="color:#fbbf24;font-weight:700;">${d.status}</span>
+                    `;
+                    dlBox.appendChild(div);
+                });
+            } else {
+                dlBox.innerHTML = `<div class="empty-state">今日無截止需求</div>`;
+            }
+
+            // ---- 3. 學生活動 / 課後安排 (新功能) ----
+            const actBox = document.getElementById("activities-container");
+            actBox.innerHTML = "";
+            if (data.activities && data.activities.length > 0) {
+                data.activities.forEach(a => {
+                    const div = document.createElement("div");
+                    div.className = "list-item act";
+                    div.innerHTML = `
+                        <span>${a.title} <span style="color:#4f6a8a;font-size:12px;">(${a.location || ''})</span></span>
+                        <span style="color:#38bdf8;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
+                    `;
+                    actBox.appendChild(div);
+                });
+            } else {
+                actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
+            }
+
+            // ---- 4. 會議 ----
+            const mBox = document.getElementById("meetings-container");
+            mBox.innerHTML = "";
+            if (data.meetings && data.meetings.length > 0) {
+                data.meetings.forEach(m => {
+                    const div = document.createElement("div");
+                    div.className = "list-item mtg";
+                    div.innerHTML = `
+                        <span>${m.title} <span style="color:#4f6a8a;font-size:12px;">${m.remark || ''}</span></span>
+                        <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start}-${m.end}</span>
+                    `;
+                    mBox.appendChild(div);
+                });
+            } else {
+                mBox.innerHTML = `<div class="empty-state">今日無會議</div>`;
+            }
+
+        } catch (err) {
+            console.error("Google Sheets 同步失敗:", err);
+        }
+    }
+
+    function refreshAll() {
+        fetchDashboardData();
+        updateClock();
+        const iframe = document.querySelector('.shuttle-wrapper iframe');
+        if (iframe) {
+            const src = iframe.src;
+            iframe.src = '';
+            setTimeout(() => { iframe.src = src; }, 150);
+        }
+        console.log("✅ 儀表板已更新", new Date().toLocaleString());
+    }
+
     updateClock();
+    fetchDashboardData();
+    setInterval(fetchDashboardData, 60000);
+    setInterval(updateClock, 1000);
 
-    async function loadData() {
-      try {
-        const response = await fetch(GAS_URL);
-        const data = await response.json();
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) refreshAll();
+    });
 
-        if (data.error) {
-          console.error("GAS 錯誤:", data.error);
-          return;
-        }
+    window.refreshAll = refreshAll;
+    console.log("🏫 教師儀表板已啟動！");
+</script>
 
-        // 1. 頂部狀態列
-        document.getElementById('tag-cycle').innerText = data.cycleDay || '-';
-        document.getElementById('tag-mode').innerText = data.mode || '-';
-        document.getElementById('tag-note').innerText = data.note || '無特別活動';
-
-        // 2. 左側：今日課表
-        const schedTbody = document.getElementById('schedule-rows');
-        if (data.schedule && data.schedule.length > 0) {
-          schedTbody.innerHTML = data.schedule.map(item => `
-            <tr>
-              <td><strong>${item.period}</strong></td>
-              <td class="time">${item.time}</td>
-              <td>${item.info}</td>
-            </tr>
-          `).join('');
-        } else {
-          schedTbody.innerHTML = `<tr><td colspan="3" class="data-empty">今日無課表資料</td></tr>`;
-        }
-
-        // 3. 中間 1：功課
-        renderSection('hw-list', data.homework, item => `
-          <div class="data-box hw">
-            <span class="data-title">${item.className ? `[${item.className}] ` : ''}${item.title}</span>
-            <span class="data-sub">${item.type || ''}</span>
-          </div>
-        `, '今日無功課紀錄');
-
-        // 4. 中間 2：文件 Deadline
-        renderSection('dl-list', data.deadlines, item => `
-          <div class="data-box dl">
-            <span class="data-title">${item.item}</span>
-            <span class="data-sub">${item.dept ? `${item.dept} ` : ''}${item.status ? `(${item.status})` : ''}</span>
-          </div>
-        `, '今日無文件截止需求');
-
-        // 5. 中間 3：學生活動 / 課後安排 (修正解析欄位)
-        renderSection('act-list', data.activities, item => {
-          const timeRange = [item.start, item.end].filter(Boolean).join(' - ');
-          const loc = item.location ? ` (${item.location})` : '';
-          return `
-            <div class="data-box act">
-              <span class="data-title">${item.title}${loc}</span>
-              <span class="data-sub">${timeRange}</span>
-            </div>
-          `;
-        }, '今日無學生活動');
-
-        // 6. 中間 4：今日會議 (修正解析欄位)
-        renderSection('mtg-list', data.meetings, item => {
-          const timeRange = [item.start, item.end].filter(Boolean).join(' - ');
-          const remark = item.remark ? ` (${item.remark})` : '';
-          return `
-            <div class="data-box mtg">
-              <span class="data-title">${item.title}${remark}</span>
-              <span class="data-sub">${timeRange}</span>
-            </div>
-          `;
-        }, '今日無突發會議');
-
-      } catch (err) {
-        console.error("讀取資料失敗:", err);
-      }
-    }
-
-    function renderSection(containerId, list, templateFunc, emptyMessage) {
-      const container = document.getElementById(containerId);
-      if (list && list.length > 0) {
-        container.innerHTML = list.map(templateFunc).join('');
-      } else {
-        container.innerHTML = `<div class="data-empty">${emptyMessage}</div>`;
-      }
-    }
-
-    loadData();
-  </script>
 </body>
 </html>
