@@ -153,7 +153,7 @@
             text-align: left;
             padding: 6px 8px;
             font-size: 13px;
-            text-transform: percase;
+            text-transform: uppercase;
             color: #4f6a8a;
             border-bottom: 2px solid rgba(255, 255, 255, 0.05);
             font-weight: 600;
@@ -454,7 +454,7 @@
             </div>
             <div class="shuttle-wrapper">
                 <iframe src="https://eta-app.socif.co/sunbus?site=gds&lang=zh"
-                        sandbox="allow-scripts allow-same-origin allow-pops allow-forms">
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
                 </iframe>
             </div>
         </div>
@@ -472,34 +472,12 @@
     // ================================================================
     //  ⚠️ 請將下面條 URL 換成你新部署嘅 Google Apps Script URL
     // ================================================================
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw5q_NrFlQIpnJetoMERzIkQ4wrlJc-xSniTQ8-9GKQqnWj9ReYHOwDVyPsIiilrD/exec";
+    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbw5q_NrFlupQIpnJetoMERzIkQ4wrlJc-xSniTQ8-9GKQqnWj9ReYHOwDVyPsIiilrD/exec";
 
     // ================================================================
     //  時鐘
     // ================================================================
-    function updateClock() // ================================================================
-//  將 Sat Dec 30 1899 13:00:00 GMT+0800 轉為 HH:MM
-// ================================================================
-function formatTimeDisplay(timeStr) {
-    if (!timeStr) return '';
-    
-    // 如果已經是 HH:MM 格式，直接回傳
-    if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
-    
-    try {
-        // 嘗試用 Date 解析
-        const date = new Date(timeStr);
-        if (!isNaN(date)) {
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            return `${hours}:${minutes}`;
-        }
-    } catch (e) {
-        // 忽略
-    }
-    
-    return timeStr; // 如果無法轉換，回傳原始值
-}{
+    function updateClock() {
         const now = new Date();
         document.getElementById("system-time").textContent = now.toLocaleString("zh-HK", {
             year: 'numeric', month: '2-digit', day: '2-digit',
@@ -575,31 +553,22 @@ function formatTimeDisplay(timeStr) {
                 tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-3">今日無課堂</td></tr>`;
             }
 
-       // ---- 學生活動 (activities) ----
-const actBox = document.getElementById("activity-container");
-actBox.innerHTML = "";
-if (data.activities && data.activities.length > 0 && data.activities[0].content) {
-    data.activities.forEach(a => {
-        const div = document.createElement("div");
-        div.className = "list-item activity";
-        
-        // 將時間轉為 HH:MM 格式
-        const startTime = formatTimeDisplay(a.start);
-        const endTime = formatTimeDisplay(a.end);
-        const timeRange = (startTime && endTime) ? `${startTime} - ${endTime}` : '';
-        
-        div.innerHTML = `
-            <span>
-                ${timeRange ? `<span style="color:#34d399;font-family:monospace;font-weight:600;">${timeRange}</span> ` : ''}
-                ${a.content || ''}
-                ${a.location ? ` (@${a.location})` : ''}
-            </span>
-        `;
-        actBox.appendChild(div);
-    });
-} else {
-    actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
-}
+            // ---- 學生活動 (activities) ----
+            const actBox = document.getElementById("activity-container");
+            actBox.innerHTML = "";
+            if (data.activities && data.activities.length > 0 && data.activities[0].content) {
+                data.activities.forEach(a => {
+                    const div = document.createElement("div");
+                    div.className = "list-item activity";
+                    div.innerHTML = `
+                        <span>${a.content || ''} ${a.location ? '(@' + a.location + ')' : ''}</span>
+                        <span style="color:#34d399;font-family:monospace;font-size:13px;">${a.start || ''}-${a.end || ''}</span>
+                    `;
+                    actBox.appendChild(div);
+                });
+            } else {
+                actBox.innerHTML = `<div class="empty-state">今日無學生活動</div>`;
+            }
 
             // ---- 功課 (homework) ----
             const hwBox = document.getElementById("homework-container");
@@ -635,31 +604,27 @@ if (data.activities && data.activities.length > 0 && data.activities[0].content)
                 dlBox.innerHTML = `<div class="empty-state">今日無截止需求</div>`;
             }
 
-          // ---- 會議 (meetings) ----
-const mBox = document.getElementById("meetings-container");
-mBox.innerHTML = "";
-if (data.meetings && data.meetings.length > 0 && data.meetings[0].content) {
-    data.meetings.forEach(m => {
-        const div = document.createElement("div");
-        div.className = "list-item mtg";
-        
-        // 將時間轉為 HH:MM 格式
-        const startTime = formatTimeDisplay(m.start);
-        const endTime = formatTimeDisplay(m.end);
-        const timeRange = (startTime && endTime) ? `${startTime} - ${endTime}` : '';
-        
-        div.innerHTML = `
-            <span>
-                ${timeRange ? `<span style="color:#a78bfa;font-family:monospace;font-weight:600;">${timeRange}</span> ` : ''}
-                ${m.content || ''}
-                ${m.location ? ` (${m.location})` : ''}
-            </span>
-        `;
-        mBox.appendChild(div);
-    });
-} else {
-    mBox.innerHTML = `<div class="empty-state" style="padding:3px 0;">今日無會議</div>`;
-}
+            // ---- 會議 (meetings) ----
+            const mBox = document.getElementById("meetings-container");
+            mBox.innerHTML = "";
+            if (data.meetings && data.meetings.length > 0 && data.meetings[0].content) {
+                data.meetings.forEach(m => {
+                    const div = document.createElement("div");
+                    div.className = "list-item mtg";
+                    div.innerHTML = `
+                        <span>${m.content || ''} <span style="color:#4f6a8a;font-size:12px;">${m.location || ''}</span></span>
+                        <span style="color:#a78bfa;font-family:monospace;font-size:13px;">${m.start || ''}-${m.end || ''}</span>
+                    `;
+                    mBox.appendChild(div);
+                });
+            } else {
+                mBox.innerHTML = `<div class="empty-state" style="padding:3px 0;">今日無會議</div>`;
+            }
+
+        } catch (err) {
+            console.error("Google Sheets 同步失敗:", err);
+        }
+    }
 
     // ================================================================
     //  重新整理
